@@ -14,6 +14,11 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Service für die Verwaltung von Farbzuordnungen.
+ * Verwaltet das Laden, Speichern und Zurücksetzen von Farbzuordnungen
+ * aus Benutzer- und Standard-Konfigurationsdateien.
+ */
 @Service
 public class ColorMappingService {
     
@@ -22,7 +27,10 @@ public class ColorMappingService {
     private final ObjectMapper objectMapper = new ObjectMapper();
     
     /**
-     * Get color mappings - tries user config first, falls back to default
+     * Ruft die Farbzuordnungen ab - versucht zuerst die Benutzerkonfiguration, 
+     * fällt auf Standardwerte zurück.
+     * 
+     * @return Liste der Farbzuordnungen
      */
     public List<ColorMapping> getColorMappings() {
         try {
@@ -43,7 +51,10 @@ public class ColorMappingService {
     }
     
     /**
-     * Save color mappings to user config file
+     * Speichert die Farbzuordnungen in der Benutzerkonfigurationsdatei.
+     * 
+     * @param mappings Liste der zu speichernden Farbzuordnungen
+     * @throws IOException wenn ein Fehler beim Speichern auftritt
      */
     public void saveColorMappings(List<ColorMapping> mappings) throws IOException {
         // Ensure directory exists
@@ -59,7 +70,10 @@ public class ColorMappingService {
     }
     
     /**
-     * Reset to default mappings
+     * Setzt die Farbzuordnungen auf die Standardwerte zurück.
+     * 
+     * @return Liste der Standard-Farbzuordnungen
+     * @throws IOException wenn ein Fehler beim Laden oder Speichern auftritt
      */
     public List<ColorMapping> resetToDefaults() throws IOException {
         // Load defaults from resources

@@ -10,11 +10,22 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveTask;
 
+/**
+ * Service für das Scannen von Verzeichnissen.
+ * Verwendet parallele Verarbeitung (ForkJoinPool) für effizientes Scannen großer Verzeichnisstrukturen.
+ */
 @Service
 public class DirectoryService {
     
     private static final int MIN_PARALLEL_SIZE = 100; // Minimum files for parallel processing
     
+    /**
+     * Scannt ein Verzeichnis und erstellt eine hierarchische Dateistruktur.
+     * 
+     * @param rootPath Pfad zum Wurzelverzeichnis
+     * @return FileNode-Objekt mit der Verzeichnisstruktur
+     * @throws IllegalArgumentException wenn der Pfad ungültig ist
+     */
     public FileNode scanDirectory(String rootPath) {
         File rootFile = new File(rootPath);
         if (!rootFile.exists() || !rootFile.isDirectory()) {
@@ -31,10 +42,20 @@ public class DirectoryService {
         }
     }
     
+    /**
+     * Rekursive Task-Klasse für das parallele Scannen von Verzeichnissen.
+     * Nutzt das Fork/Join-Framework für optimale Performance.
+     */
     private static class DirectoryScanTask extends RecursiveTask<FileNode> {
         private final File file;
         private final FileNode parent;
         
+        /**
+         * Konstruktor für eine Verzeichnis-Scan-Aufgabe.
+         * 
+         * @param file Zu scannende Datei oder Verzeichnis
+         * @param parent Übergeordneter FileNode
+         */
         public DirectoryScanTask(File file, FileNode parent) {
             this.file = file;
             this.parent = parent;

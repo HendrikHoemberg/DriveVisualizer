@@ -12,6 +12,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * REST-Controller für Dateisystem-Operationen.
+ * Bietet Endpunkte zum Scannen von Verzeichnissen und Abrufen verfügbarer Laufwerke.
+ */
 @RestController
 @RequestMapping("/api")
 @CrossOrigin
@@ -20,6 +24,12 @@ public class FileSystemController {
     @Autowired
     private DirectoryService directoryService;
     
+    /**
+     * Scannt ein Verzeichnis und gibt die Dateistruktur zurück.
+     * 
+     * @param path Pfad zum zu scannenden Verzeichnis
+     * @return ResponseEntity mit der Dateistruktur oder Fehlermeldung
+     */
     @GetMapping("/scan")
     public ResponseEntity<?> scanDirectory(@RequestParam String path) {
         try {
@@ -32,6 +42,11 @@ public class FileSystemController {
         }
     }
     
+    /**
+     * Ruft alle verfügbaren Laufwerke des Systems ab.
+     * 
+     * @return ResponseEntity mit der Liste der verfügbaren Laufwerke
+     */
     @GetMapping("/drives")
     public ResponseEntity<List<Map<String, String>>> getAvailableDrives() {
         List<Map<String, String>> drives = new ArrayList<>();

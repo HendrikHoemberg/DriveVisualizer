@@ -10,6 +10,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * REST-Controller für die Verwaltung von Farbzuordnungen.
+ * Bietet Endpunkte zum Abrufen, Speichern und Zurücksetzen von Farbzuordnungen.
+ */
 @RestController
 @RequestMapping("/api/color-mappings")
 @CrossOrigin
@@ -18,6 +22,11 @@ public class ColorMappingController {
     @Autowired
     private ColorMappingService colorMappingService;
     
+    /**
+     * Ruft alle Farbzuordnungen ab.
+     * 
+     * @return ResponseEntity mit der Liste der Farbzuordnungen
+     */
     @GetMapping
     public ResponseEntity<List<ColorMapping>> getColorMappings() {
         try {
@@ -28,6 +37,12 @@ public class ColorMappingController {
         }
     }
     
+    /**
+     * Speichert die Farbzuordnungen.
+     * 
+     * @param mappings Liste der zu speichernden Farbzuordnungen
+     * @return ResponseEntity mit Erfolgsmeldung oder Fehlermeldung
+     */
     @PostMapping
     public ResponseEntity<?> saveColorMappings(@RequestBody List<ColorMapping> mappings) {
         try {
@@ -42,6 +57,11 @@ public class ColorMappingController {
         }
     }
     
+    /**
+     * Setzt die Farbzuordnungen auf die Standardwerte zurück.
+     * 
+     * @return ResponseEntity mit den Standard-Farbzuordnungen oder Fehlermeldung
+     */
     @PostMapping("/reset")
     public ResponseEntity<?> resetToDefaults() {
         try {
