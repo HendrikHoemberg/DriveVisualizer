@@ -2,7 +2,6 @@ package com.voba.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Modellklasse für einen Knoten in der Dateisystem-Hierarchie.
@@ -123,35 +122,5 @@ public class FileNode {
     
     public void setExtension(String extension) {
         this.extension = extension;
-    }
-    
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        FileNode fileNode = (FileNode) o;
-        return size == fileNode.size &&
-                isDirectory == fileNode.isDirectory &&
-                Objects.equals(name, fileNode.name) &&
-                Objects.equals(path, fileNode.path) &&
-                Objects.equals(children, fileNode.children) &&
-                Objects.equals(extension, fileNode.extension);
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, path, size, isDirectory, children, extension);
-    }
-    
-    @Override
-    public String toString() {
-        return "FileNode{" +
-                "name='" + name + '\'' +
-                ", path='" + path + '\'' +
-                ", size=" + size +
-                ", isDirectory=" + isDirectory +
-                ", children=" + (children != null ? children.size() : 0) + " items" +
-                ", extension='" + extension + '\'' +
-                '}';
     }
 }
