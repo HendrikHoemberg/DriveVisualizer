@@ -1,0 +1,128 @@
+/* Custom styles for Drive Visualizer */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+}
+
+#visualizationContainer {
+    border: 1px solid #dee2e6;
+    background-color: #ffffff;
+}
+
+.rectangle {
+    stroke: #333;
+    stroke-width: 0.5;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.rectangle:hover {
+    opacity: 0.8;
+}
+
+.rectangle.selected {
+    stroke: #ff6b6b;
+    stroke-width: 2;
+}
+
+.color-legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.color-box {
+    width: 20px;
+    height: 15px;
+    border: 1px solid #333;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.extension-label {
+    font-family: monospace;
+    font-size: 0.9em;
+}
+
+#currentPath {
+    font-family: monospace;
+    word-break: break-all;
+    font-size: 0.9em;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+/* Scrollbar styling for webkit browsers */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Keyboard shortcuts legend styling */
+.keyboard-legend {
+    border-top: 2px solid #495057;
+    transition: all 0.3s ease;
+}
+
+.keyboard-legend kbd {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.8rem;
+    border: 1px solid #6c757d;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    background-color: #495057;
+    color: #ffffff;
+}
+
+.keyboard-legend kbd:hover {
+    background-color: #5a6268;
+}
+
+.keyboard-legend .text-muted {
+    color: #ffffff !important;
+    opacity: 0.9;
+    margin-left: 0.3rem;
+}
+
+#toggleLegendBtn {
+    transition: transform 0.3s ease;
+}
+
+#toggleLegendBtn:hover {
+    transform: scale(1.1);
+}
+
+/* Responsive legend for smaller screens */
+@media (max-width: 992px) {
+    .keyboard-legend {
+        font-size: 0.75rem !important;
+    }
+    
+    .keyboard-legend kbd {
+        padding: 0.15rem 0.4rem;
+        font-size: 0.7rem;
+    }
+}

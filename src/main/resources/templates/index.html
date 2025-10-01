@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drive Visualizer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <!-- Main Container -->
+    <div class="container-fluid vh-100 d-flex flex-column">
+        <!-- Header -->
+        <nav class="navbar navbar-dark bg-dark">
+            <div class="container-fluid">
+                <span class="navbar-brand mb-0 h1">Drive Visualizer</span>
+                <div class="d-flex align-items-center">
+                    <input type="text" class="form-control me-2" id="directoryInput" placeholder="Verzeichnispfad eingeben (z.B. C:\Users\...)" style="min-width: 300px;">
+                    <button class="btn btn-outline-light me-2" id="scanBtn">
+                        <i class="bi bi-folder"></i> Scannen
+                    </button>
+                    <button class="btn btn-outline-light" id="settingsBtn">
+                        <i class="bi bi-gear"></i> Einstellungen
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Info Bar -->
+        <div class="bg-light border-bottom p-2">
+            <div class="row">
+                <div class="col-md-6">
+                    <small><strong>Pfad:</strong> <span id="currentPath">Kein Verzeichnis ausgewählt</span></small>
+                </div>
+                <div class="col-md-6 text-end">
+                    <small><strong>Größe:</strong> <span id="currentSize">-</span></small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Canvas Container -->
+        <div class="flex-grow-1 position-relative" style="overflow: hidden;">
+            <canvas id="treemapCanvas"></canvas>
+            <div id="tooltip" class="position-absolute bg-dark text-white p-2 rounded" style="display: none; pointer-events: none; z-index: 1000;"></div>
+        </div>
+
+        <!-- Keyboard Shortcuts Legend -->
+        <div id="keyboardLegend" class="keyboard-legend bg-dark text-white py-2 px-3" style="font-size: 0.85rem;">
+            <div class="container-fluid">
+                <div class="row g-2">
+                    <div class="col-auto">
+                        <strong>Tastaturkürzel:</strong>
+                    </div>
+                    <div class="col-auto">
+                        <kbd class="bg-secondary">←</kbd> <kbd class="bg-secondary">→</kbd> <span class="text-muted">Geschwister</span>
+                    </div>
+                    <div class="col-auto">
+                        <kbd class="bg-secondary">↑</kbd> <span class="text-muted">Übergeordnet</span>
+                    </div>
+                    <div class="col-auto">
+                        <kbd class="bg-secondary">↓</kbd> <span class="text-muted">Untergeordnet</span>
+                    </div>
+                    <div class="col-auto border-start ps-3">
+                        <kbd class="bg-secondary">Space</kbd> <span class="text-muted">Hineinzoomen</span>
+                    </div>
+                    <div class="col-auto">
+                        <kbd class="bg-secondary">Backspace</kbd> <span class="text-muted">Herauszoomen</span>
+                    </div>
+                    <div class="col-auto">
+                        <kbd class="bg-secondary">Esc</kbd> <span class="text-muted">Zurücksetzen</span>
+                    </div>
+                    <div class="col-auto border-start ps-3">
+                        <strong>Maus:</strong>
+                    </div>
+                    <div class="col-auto">
+                        <kbd class="bg-secondary">Linksklick</kbd> <span class="text-muted">Element auswählen</span>
+                    </div>
+                    <div class="col-auto">
+                        <kbd class="bg-secondary">Strg</kbd> + <kbd class="bg-secondary">Linksklick</kbd> <span class="text-muted">Übergeordneten Ordner auswählen</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Settings Modal -->
+    <div class="modal fade" id="settingsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Einstellungen</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="minPixelSize" class="form-label">Minimale Pixelgröße:</label>
+                        <input type="number" class="form-control" id="minPixelSize" value="10" min="1">
+                        <small class="form-text text-muted">Kleinere Dateien werden nicht angezeigt</small>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="form-label mb-0">Farbzuordnungen:</label>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-success" id="addMappingBtn">+ Hinzufügen</button>
+                                <button type="button" class="btn btn-sm btn-warning" id="resetMappingsBtn">Zurücksetzen</button>
+                            </div>
+                        </div>
+                        <div id="colorMappings" class="border rounded p-2" style="max-height: 400px; overflow-y: auto;">
+                            <!-- Color mappings -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" id="saveSettingsBtn">Speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="position-fixed top-0 start-0 w-100 h-100 d-none" style="background: rgba(0,0,0,0.7); z-index: 9999;">
+        <div class="position-absolute top-50 start-50 translate-middle text-center text-white">
+            <div class="spinner-border mb-3" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Laden...</span>
+            </div>
+            <h4>Verzeichnis wird gescannt...</h4>
+            <p>Bitte warten Sie...</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/treemap.js}"></script>
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>
