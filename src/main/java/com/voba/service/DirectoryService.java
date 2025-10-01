@@ -1,7 +1,8 @@
-package com.drivevisualizer.service;
+package com.voba.service;
 
-import com.drivevisualizer.model.FileNode;
 import org.springframework.stereotype.Service;
+
+import com.voba.model.FileNode;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -74,7 +75,6 @@ public class DirectoryService {
                 File[] children = file.listFiles();
                 if (children != null && children.length > 0) {
                     if (children.length < MIN_PARALLEL_SIZE) {
-                        // Process sequentially for small directories
                         for (File child : children) {
                             if (shouldProcess(child)) {
                                 FileNode childNode = compute(child, node);
@@ -116,22 +116,11 @@ public class DirectoryService {
             try {
                 Path path = file.toPath();
                 
-                // Skip symbolic links
                 if (Files.isSymbolicLink(path)) {
                     return false;
                 }
                 
-                // Skip hidden files/directories (optional)
                 if (file.isHidden()) {
-                    return false;
-                }
-                
-                // Skip system directories
-                String name = file.getName();
-                if (name.equals("System Volume Information") || 
-                    name.equals("$Recycle.Bin") ||
-                    name.equals(".git") ||
-                    name.equals("node_modules")) {
                     return false;
                 }
                 

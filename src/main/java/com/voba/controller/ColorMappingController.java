@@ -1,10 +1,11 @@
-package com.drivevisualizer.controller;
+package com.voba.controller;
 
-import com.drivevisualizer.model.ColorMapping;
-import com.drivevisualizer.service.ColorMappingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.voba.model.ColorMapping;
+import com.voba.service.ColorMappingService;
 
 import java.util.HashMap;
 import java.util.List;

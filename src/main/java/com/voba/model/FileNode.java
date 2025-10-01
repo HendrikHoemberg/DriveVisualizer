@@ -1,4 +1,4 @@
-package com.drivevisualizer.model;
+package com.voba.model;
 
 import lombok.Data;
 import java.util.ArrayList;

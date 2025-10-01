@@ -1,12 +1,13 @@
-package com.drivevisualizer.controller;
+package com.voba.controller;
 
-import com.drivevisualizer.model.FileNode;
-import com.drivevisualizer.service.DirectoryService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+
+import com.voba.model.FileNode;
+import com.voba.service.DirectoryService;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -61,8 +62,6 @@ class FileSystemControllerTest {
         mockMvc.perform(get("/api/drives"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
-        
-        // No service mock needed as this method directly accesses File.listRoots()
     }
 
     @Test

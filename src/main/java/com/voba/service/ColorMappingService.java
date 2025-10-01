@@ -1,8 +1,9 @@
-package com.drivevisualizer.service;
+package com.voba.service;
 
-import com.drivevisualizer.model.ColorMapping;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.voba.model.ColorMapping;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
@@ -34,18 +35,15 @@ public class ColorMappingService {
      */
     public List<ColorMapping> getColorMappings() {
         try {
-            // Try to load user config first
             File userConfigFile = new File(USER_CONFIG_FILE);
             if (userConfigFile.exists()) {
                 return objectMapper.readValue(userConfigFile, new TypeReference<List<ColorMapping>>() {});
             }
             
-            // Fall back to default config from resources
             ClassPathResource resource = new ClassPathResource(DEFAULT_CONFIG_FILE);
             return objectMapper.readValue(resource.getInputStream(), new TypeReference<List<ColorMapping>>() {});
             
         } catch (IOException ioException) {
-            // If all else fails, return empty list
             return new ArrayList<>();
         }
     }
@@ -57,13 +55,11 @@ public class ColorMappingService {
      * @throws IOException wenn ein Fehler beim Speichern auftritt
      */
     public void saveColorMappings(List<ColorMapping> mappings) throws IOException {
-        // Ensure directory exists
         File configDir = new File(System.getProperty("user.home"), ".drivevisualizer");
         if (!configDir.exists()) {
             configDir.mkdirs();
         }
         
-        // Write to user config file
         String json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(mappings);
         Files.write(Paths.get(USER_CONFIG_FILE), json.getBytes(), 
                     StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
@@ -76,12 +72,10 @@ public class ColorMappingService {
      * @throws IOException wenn ein Fehler beim Laden oder Speichern auftritt
      */
     public List<ColorMapping> resetToDefaults() throws IOException {
-        // Load defaults from resources
         ClassPathResource resource = new ClassPathResource(DEFAULT_CONFIG_FILE);
         List<ColorMapping> defaults = objectMapper.readValue(resource.getInputStream(), 
                                                              new TypeReference<List<ColorMapping>>() {});
         
-        // Save as user config
         saveColorMappings(defaults);
         
         return defaults;

@@ -1,4 +1,8 @@
 class TreemapVisualizer {
+    // =============================================================================
+    // INITIALIZATION & SETUP
+    // =============================================================================
+    
     constructor(canvas, options = {}) {
         this.canvas = canvas;
         this.context = canvas.getContext('2d');
@@ -15,7 +19,6 @@ class TreemapVisualizer {
         this.defaultFileColor = '#95a5a6';
         this.highlightColor = '#ff0000';
         
-        // Canvas setup
         this.setupCanvas();
         this.setupEventListeners();
     }
@@ -39,7 +42,6 @@ class TreemapVisualizer {
         this.canvas.addEventListener('click', (event) => this.handleClick(event));
         this.canvas.addEventListener('mouseleave', () => this.hideTooltip());
         
-        // Keyboard navigation
         document.addEventListener('keydown', (event) => this.handleKeyPress(event));
     }
     
@@ -49,6 +51,10 @@ class TreemapVisualizer {
         this.selectedNode = data;
         this.render();
     }
+    
+    // =============================================================================
+    // RENDERING
+    // =============================================================================
     
     render() {
         if (!this.data) return;
@@ -77,7 +83,6 @@ class TreemapVisualizer {
     }
     
     drawTreemap(node, rect, horizontal) {
-        // Store node-rectangle mapping
         this.nodeRectMap.set(node, rect);
         
         // Skip if rectangle is too small
@@ -98,7 +103,6 @@ class TreemapVisualizer {
             return;
         }
         
-        // Calculate and draw children
         const children = [...node.children].sort((a, b) => b.size - a.size);
         let currentPos = horizontal ? rect.x : rect.y;
         
@@ -132,7 +136,6 @@ class TreemapVisualizer {
     }
     
     drawRect(node, rect) {
-        // Determine color
         let color = this.defaultDirColor;
         if (!node.directory) {
             if (node.extension && this.colorMap.has(node.extension)) {
@@ -142,11 +145,9 @@ class TreemapVisualizer {
             }
         }
         
-        // Draw rectangle
         this.context.fillStyle = color;
         this.context.fillRect(rect.x, rect.y, rect.width, rect.height);
         
-        // Draw border
         this.context.strokeStyle = '#ffffff';
         this.context.lineWidth = 1;
         this.context.strokeRect(rect.x, rect.y, rect.width, rect.height);
@@ -177,12 +178,15 @@ class TreemapVisualizer {
         return truncated + '...';
     }
     
+    // =============================================================================
+    // EVENT HANDLERS
+    // =============================================================================
+    
     handleMouseMove(event) {
         const canvasBounds = this.canvas.getBoundingClientRect();
         const mouseX = event.clientX - canvasBounds.left;
         const mouseY = event.clientY - canvasBounds.top;
         
-        // Use the most specific node for better tooltip accuracy
         const node = this.findSmallestNodeAtPosition(mouseX, mouseY);
         if (node) {
             this.showTooltip(node, event.clientX, event.clientY);
@@ -198,7 +202,6 @@ class TreemapVisualizer {
         const mouseX = event.clientX - canvasBounds.left;
         const mouseY = event.clientY - canvasBounds.top;
         
-        // Get the most specific (smallest) node at this position
         const node = this.findSmallestNodeAtPosition(mouseX, mouseY);
         if (!node) return;
         
@@ -210,7 +213,6 @@ class TreemapVisualizer {
                 this.render();
                 this.onNodeSelect(parent);
             } else {
-                // If no parent found (i.e., we're at root), select the current root
                 this.selectedNode = this.currentRoot;
                 this.render();
                 this.onNodeSelect(this.currentRoot);
@@ -218,13 +220,7 @@ class TreemapVisualizer {
         } else {
             // Regular click: Select the exact element clicked
             this.selectedNode = node;
-            // Only zoom if double-clicking on a directory (optional enhancement)
-            // For now, we'll keep the zoom behavior but only on directories
-            if (node.directory && node.children && node.children.length > 0) {
-                // Optional: You might want to remove auto-zoom on single click
-                // and implement double-click instead. For now keeping existing behavior.
-                this.zoomIn(node);
-            }
+
             this.render();
             this.onNodeSelect(node);
         }
@@ -267,6 +263,10 @@ class TreemapVisualizer {
         }
     }
     
+    // =============================================================================
+    // NAVIGATION
+    // =============================================================================
+    
     navigateToSibling(direction) {
         const parent = this.findParent(this.currentRoot, this.selectedNode);
         if (!parent || !parent.children) return;
@@ -298,6 +298,10 @@ class TreemapVisualizer {
         }
     }
     
+    // =============================================================================
+    // NODE SEARCH & TRAVERSAL
+    // =============================================================================
+    
     findParent(root, node) {
         if (!root.children) return null;
         
@@ -319,7 +323,6 @@ class TreemapVisualizer {
         return null;
     }
     
-    // Find the smallest (most specific) node at a position
     findSmallestNodeAtPosition(positionX, positionY) {
         let smallestNode = null;
         let smallestArea = Infinity;
@@ -336,6 +339,10 @@ class TreemapVisualizer {
         }
         return smallestNode;
     }
+    
+    // =============================================================================
+    // ZOOM & VIEW CONTROL
+    // =============================================================================
     
     zoomIn(node) {
         if (node.directory && node.children && node.children.length > 0) {
@@ -375,6 +382,10 @@ class TreemapVisualizer {
         return null;
     }
     
+    // =============================================================================
+    // TOOLTIP
+    // =============================================================================
+    
     showTooltip(node, mouseX, mouseY) {
         if (!this.tooltip) return;
         
@@ -409,6 +420,10 @@ class TreemapVisualizer {
         }
     }
     
+    // =============================================================================
+    // UTILITY FUNCTIONS
+    // =============================================================================
+    
     formatSize(bytes) {
         const units = ['B', 'KB', 'MB', 'GB', 'TB'];
         let size = bytes;
@@ -422,8 +437,11 @@ class TreemapVisualizer {
         return `${size.toFixed(2)} ${units[unitIndex]}`;
     }
     
+    // =============================================================================
+    // CALLBACKS & CONFIGURATION
+    // =============================================================================
+    
     onNodeSelect(node) {
-        // Override this method to handle node selection
         if (this.nodeSelectCallback) {
             this.nodeSelectCallback(node);
         }

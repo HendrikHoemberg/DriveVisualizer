@@ -1,8 +1,9 @@
-package com.drivevisualizer.controller;
+package com.voba.controller;
 
-import com.drivevisualizer.model.ColorMapping;
-import com.drivevisualizer.service.ColorMappingService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.voba.model.ColorMapping;
+import com.voba.service.ColorMappingService;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

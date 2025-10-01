@@ -1,10 +1,12 @@
-package com.drivevisualizer.service;
+package com.voba.service;
 
-import com.drivevisualizer.model.FileNode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import com.voba.model.FileNode;
+import com.voba.service.DirectoryService;
 
 import java.io.File;
 import java.io.IOException;

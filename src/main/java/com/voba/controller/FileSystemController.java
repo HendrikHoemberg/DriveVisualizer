@@ -1,10 +1,11 @@
-package com.drivevisualizer.controller;
+package com.voba.controller;
 
-import com.drivevisualizer.model.FileNode;
-import com.drivevisualizer.service.DirectoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.voba.model.FileNode;
+import com.voba.service.DirectoryService;
 
 import java.io.File;
 import java.util.ArrayList;

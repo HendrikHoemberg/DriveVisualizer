@@ -1,4 +1,4 @@
-package com.drivevisualizer.controller;
+package com.voba.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

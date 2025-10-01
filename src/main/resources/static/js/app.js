@@ -1,9 +1,16 @@
-// Global variables
+// =============================================================================
+// GLOBAL STATE
+// =============================================================================
+
 let treemapVisualizer;
 let currentData = null;
 let colorMap = new Map();
 let colorMappings = []; // Array of {extension, color} objects
 let minPixelSize = 10;
+
+// =============================================================================
+// INITIALIZATION & SETUP
+// =============================================================================
 
 // Initialize application
 document.addEventListener('DOMContentLoaded', () => {
@@ -73,7 +80,9 @@ function initializeEventListeners() {
     });
 }
 
-
+// =============================================================================
+// DIRECTORY SCANNING
+// =============================================================================
 
 // Scan directory
 async function scanDirectory(path) {
@@ -105,6 +114,10 @@ async function scanDirectory(path) {
     }
 }
 
+// =============================================================================
+// SETTINGS MANAGEMENT
+// =============================================================================
+
 // Load settings
 async function loadSettings() {
     // Load min pixel size from localStorage
@@ -121,6 +134,65 @@ async function loadSettings() {
     await loadColorMappingsFromBackend();
 }
 
+// Save settings
+async function saveSettings() {
+    // Get min pixel size
+    minPixelSize = parseInt(document.getElementById('minPixelSize').value) || 10;
+    
+    // Save min pixel size to localStorage
+    const settings = { minPixelSize: minPixelSize };
+    localStorage.setItem('driveVisualizerSettings', JSON.stringify(settings));
+    
+    // Get color mappings from UI
+    colorMappings = [];
+    const rows = document.querySelectorAll('.color-mapping-row');
+    
+    rows.forEach(row => {
+        const ext = row.querySelector('.ext-input').value.trim().toLowerCase();
+        const color = row.querySelector('.color-input').value;
+        
+        if (ext) {
+            colorMappings.push({
+                extension: ext,
+                color: color
+            });
+        }
+    });
+    
+    // Save color mappings to backend
+    try {
+        const response = await fetch('/api/color-mappings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(colorMappings)
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to save color mappings');
+        }
+        
+        updateColorMap();
+        if (treemapVisualizer) {
+            treemapVisualizer.updateMinPixelSize(minPixelSize);
+            treemapVisualizer.updateColorMap(colorMap);
+        }
+        
+        bootstrap.Modal.getInstance(document.getElementById('settingsModal')).hide();
+        
+        alert('Einstellungen erfolgreich gespeichert!');
+        
+    } catch (error) {
+        console.error('Error saving color mappings:', error);
+        alert('Fehler beim Speichern der Einstellungen: ' + error.message);
+    }
+}
+
+// =============================================================================
+// COLOR MAPPING MANAGEMENT
+// =============================================================================
+
 // Load color mappings from backend
 async function loadColorMappingsFromBackend() {
     try {
@@ -134,7 +206,6 @@ async function loadColorMappingsFromBackend() {
         renderColorMappingsUI();
     } catch (error) {
         console.error('Error loading color mappings:', error);
-        // Fall back to empty mappings
         colorMappings = [];
         updateColorMap();
         renderColorMappingsUI();
@@ -150,6 +221,33 @@ function updateColorMap() {
         }
     });
 }
+
+// Reset color mappings to defaults
+async function resetColorMappings() {
+    try {
+        const response = await fetch('/api/color-mappings/reset', {
+            method: 'POST'
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to reset color mappings');
+        }
+        
+        colorMappings = await response.json();
+        updateColorMap();
+        renderColorMappingsUI();
+        
+        alert('Farbzuordnungen wurden zurückgesetzt!');
+        
+    } catch (error) {
+        console.error('Error resetting color mappings:', error);
+        alert('Fehler beim Zurücksetzen: ' + error.message);
+    }
+}
+
+// =============================================================================
+// UI RENDERING
+// =============================================================================
 
 // Render color mappings UI
 function renderColorMappingsUI() {
@@ -209,87 +307,6 @@ function addColorMappingRow(extension = '', color = '#808080', index = null) {
     container.appendChild(row);
 }
 
-// Save settings
-async function saveSettings() {
-    // Get min pixel size
-    minPixelSize = parseInt(document.getElementById('minPixelSize').value) || 10;
-    
-    // Save min pixel size to localStorage
-    const settings = { minPixelSize: minPixelSize };
-    localStorage.setItem('driveVisualizerSettings', JSON.stringify(settings));
-    
-    // Get color mappings from UI
-    colorMappings = [];
-    const rows = document.querySelectorAll('.color-mapping-row');
-    
-    rows.forEach(row => {
-        const ext = row.querySelector('.ext-input').value.trim().toLowerCase();
-        const color = row.querySelector('.color-input').value;
-        
-        if (ext) {
-            colorMappings.push({
-                extension: ext,
-                color: color
-            });
-        }
-    });
-    
-    // Save color mappings to backend
-    try {
-        const response = await fetch('/api/color-mappings', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(colorMappings)
-        });
-        
-        if (!response.ok) {
-            throw new Error('Failed to save color mappings');
-        }
-        
-        // Update color map and visualizer
-        updateColorMap();
-        if (treemapVisualizer) {
-            treemapVisualizer.updateMinPixelSize(minPixelSize);
-            treemapVisualizer.updateColorMap(colorMap);
-        }
-        
-        // Close modal
-        bootstrap.Modal.getInstance(document.getElementById('settingsModal')).hide();
-        
-        // Show success message
-        alert('Einstellungen erfolgreich gespeichert!');
-        
-    } catch (error) {
-        console.error('Error saving color mappings:', error);
-        alert('Fehler beim Speichern der Einstellungen: ' + error.message);
-    }
-}
-
-// Reset color mappings to defaults
-async function resetColorMappings() {
-    try {
-        const response = await fetch('/api/color-mappings/reset', {
-            method: 'POST'
-        });
-        
-        if (!response.ok) {
-            throw new Error('Failed to reset color mappings');
-        }
-        
-        colorMappings = await response.json();
-        updateColorMap();
-        renderColorMappingsUI();
-        
-        alert('Farbzuordnungen wurden zurückgesetzt!');
-        
-    } catch (error) {
-        console.error('Error resetting color mappings:', error);
-        alert('Fehler beim Zurücksetzen: ' + error.message);
-    }
-}
-
 // Update path display
 function updatePathDisplay(path) {
     document.getElementById('currentPath').textContent = path || 'No directory selected';
@@ -299,6 +316,20 @@ function updatePathDisplay(path) {
 function updateSizeDisplay(size) {
     document.getElementById('currentSize').textContent = formatSize(size);
 }
+
+// Show/hide loading overlay
+function showLoading(show) {
+    const overlay = document.getElementById('loadingOverlay');
+    if (show) {
+        overlay.classList.remove('d-none');
+    } else {
+        overlay.classList.add('d-none');
+    }
+}
+
+// =============================================================================
+// UTILITY FUNCTIONS
+// =============================================================================
 
 // Format size
 function formatSize(bytes) {
@@ -311,15 +342,9 @@ function formatSize(bytes) {
     return parseFloat((bytes / Math.pow(kilobyte, unitIndex)).toFixed(2)) + ' ' + units[unitIndex];
 }
 
-// Show/hide loading overlay
-function showLoading(show) {
-    const overlay = document.getElementById('loadingOverlay');
-    if (show) {
-        overlay.classList.remove('d-none');
-    } else {
-        overlay.classList.add('d-none');
-    }
-}
+// =============================================================================
+// EVENT HANDLERS
+// =============================================================================
 
 // Handle window resize
 window.addEventListener('resize', () => {

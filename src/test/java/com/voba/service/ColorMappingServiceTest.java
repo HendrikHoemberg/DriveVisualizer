@@ -1,10 +1,12 @@
-package com.drivevisualizer.service;
+package com.voba.service;
 
-import com.drivevisualizer.model.ColorMapping;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import com.voba.model.ColorMapping;
+import com.voba.service.ColorMappingService;
 
 import java.io.File;
 import java.io.IOException;
