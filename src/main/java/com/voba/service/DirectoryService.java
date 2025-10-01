@@ -35,7 +35,7 @@ public class DirectoryService {
         
         ForkJoinPool pool = new ForkJoinPool();
         try {
-            FileNode result = pool.invoke(new DirectoryScanTask(rootFile, null));
+            FileNode result = pool.invoke(new DirectoryScanTask(rootFile));
             result.sortChildren();
             return result;
         } finally {
@@ -49,17 +49,14 @@ public class DirectoryService {
      */
     private static class DirectoryScanTask extends RecursiveTask<FileNode> {
         private final File file;
-        private final FileNode parent;
         
         /**
          * Konstruktor für eine Verzeichnis-Scan-Aufgabe.
          * 
          * @param file Zu scannende Datei oder Verzeichnis
-         * @param parent Übergeordneter FileNode
          */
-        public DirectoryScanTask(File file, FileNode parent) {
+        public DirectoryScanTask(File file) {
             this.file = file;
-            this.parent = parent;
         }
         
         @Override
@@ -98,7 +95,7 @@ public class DirectoryService {
         }
         
         private FileNode compute(File file, FileNode parent) {
-            DirectoryScanTask task = new DirectoryScanTask(file, parent);
+            DirectoryScanTask task = new DirectoryScanTask(file);
             return task.compute();
         }
         
@@ -106,7 +103,7 @@ public class DirectoryService {
             java.util.List<DirectoryScanTask> tasks = new java.util.ArrayList<>();
             for (File child : children) {
                 if (shouldProcess(child)) {
-                    tasks.add(new DirectoryScanTask(child, parent));
+                    tasks.add(new DirectoryScanTask(child));
                 }
             }
             return tasks;

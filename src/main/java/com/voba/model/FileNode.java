@@ -1,14 +1,13 @@
 package com.voba.model;
 
-import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Modellklasse für einen Knoten in der Dateisystem-Hierarchie.
  * Repräsentiert eine Datei oder ein Verzeichnis mit allen relevanten Informationen.
  */
-@Data
 public class FileNode {
     private String name;
     private String path;
@@ -76,5 +75,83 @@ public class FileNode {
                 child.sortChildren();
             }
         }
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public String getPath() {
+        return path;
+    }
+    
+    public long getSize() {
+        return size;
+    }
+    
+    public boolean isDirectory() {
+        return isDirectory;
+    }
+    
+    public List<FileNode> getChildren() {
+        return children;
+    }
+    
+    public String getExtension() {
+        return extension;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public void setPath(String path) {
+        this.path = path;
+    }
+    
+    public void setSize(long size) {
+        this.size = size;
+    }
+    
+    public void setDirectory(boolean directory) {
+        isDirectory = directory;
+    }
+    
+    public void setChildren(List<FileNode> children) {
+        this.children = children;
+    }
+    
+    public void setExtension(String extension) {
+        this.extension = extension;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FileNode fileNode = (FileNode) o;
+        return size == fileNode.size &&
+                isDirectory == fileNode.isDirectory &&
+                Objects.equals(name, fileNode.name) &&
+                Objects.equals(path, fileNode.path) &&
+                Objects.equals(children, fileNode.children) &&
+                Objects.equals(extension, fileNode.extension);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, path, size, isDirectory, children, extension);
+    }
+    
+    @Override
+    public String toString() {
+        return "FileNode{" +
+                "name='" + name + '\'' +
+                ", path='" + path + '\'' +
+                ", size=" + size +
+                ", isDirectory=" + isDirectory +
+                ", children=" + (children != null ? children.size() : 0) + " items" +
+                ", extension='" + extension + '\'' +
+                '}';
     }
 }
