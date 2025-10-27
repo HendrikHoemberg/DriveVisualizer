@@ -177,6 +177,12 @@ async function scanDirectory(path) {
         treemapVisualizer.setData(data);
         fileTreeExplorer.setData(data);
         
+        // Focus file tree after rendering completes
+        setTimeout(() => {
+            const fileTree = document.getElementById('fileTree');
+            fileTree.focus();
+        }, 0);
+        
     } catch (error) {
         alert('Error scanning directory: ' + error.message);
         console.error('Scan error:', error);
