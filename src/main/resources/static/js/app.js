@@ -3,10 +3,13 @@
 // =============================================================================
 
 let treemapVisualizer;
+let fileTreeExplorer;
+let resizeHandle;
 let currentData = null;
 let colorMap = new Map();
 let colorMappings = []; // Array of {extension, color} objects
 let minPixelSize = 10;
+let syncingSelection = false; // Prevent infinite loops when syncing
 
 // =============================================================================
 // INITIALIZATION & SETUP
@@ -15,6 +18,8 @@ let minPixelSize = 10;
 // Initialize application
 document.addEventListener('DOMContentLoaded', () => {
     initializeTreemap();
+    initializeFileTree();
+    initializeResizeHandle();
     initializeEventListeners();
     loadSettings();
 });
@@ -32,9 +37,54 @@ function initializeTreemap() {
     
     // Set callback for node selection
     treemapVisualizer.setNodeSelectCallback((node) => {
-        updatePathDisplay(node.path);
-        updateSizeDisplay(node.size);
+        if (!syncingSelection) {
+            syncingSelection = true;
+            updatePathDisplay(node.path);
+            updateSizeDisplay(node.size);
+            
+            // Sync with file tree
+            if (fileTreeExplorer) {
+                fileTreeExplorer.selectNodeExternal(node);
+            }
+            syncingSelection = false;
+        }
     });
+}
+
+// Initialize file tree explorer
+function initializeFileTree() {
+    const fileTreeContainer = document.getElementById('fileTree');
+    fileTreeExplorer = new FileTreeExplorer(fileTreeContainer);
+    
+    // Set callback for node selection
+    fileTreeExplorer.setNodeSelectCallback((node) => {
+        if (!syncingSelection) {
+            syncingSelection = true;
+            updatePathDisplay(node.path);
+            updateSizeDisplay(node.size);
+            
+            // Sync with treemap and focus on selected node
+            if (treemapVisualizer) {
+                treemapVisualizer.focusOnNode(node);
+            }
+            syncingSelection = false;
+        }
+    });
+}
+
+// Initialize resize handle
+function initializeResizeHandle() {
+    const handleElement = document.getElementById('resizeHandle');
+    const topPanel = document.getElementById('explorerPanel');
+    const bottomPanel = document.getElementById('visualizationPanel');
+    
+    resizeHandle = new ResizeHandle(handleElement, topPanel, bottomPanel);
+    
+    // Load saved size after a short delay to ensure layout is ready
+    setTimeout(() => {
+        resizeHandle.loadSavedSize();
+        window.dispatchEvent(new Event('resize'));
+    }, 100);
 }
 
 // Initialize event listeners
@@ -78,6 +128,19 @@ function initializeEventListeners() {
             document.getElementById('scanBtn').click();
         }
     });
+    
+    // File tree expand/collapse buttons
+    document.getElementById('expandAllBtn').addEventListener('click', () => {
+        if (fileTreeExplorer) {
+            fileTreeExplorer.expandAll();
+        }
+    });
+    
+    document.getElementById('collapseAllBtn').addEventListener('click', () => {
+        if (fileTreeExplorer) {
+            fileTreeExplorer.collapseAll();
+        }
+    });
 }
 
 // =============================================================================
@@ -103,8 +166,9 @@ async function scanDirectory(path) {
         updatePathDisplay(data.path);
         updateSizeDisplay(data.size);
         
-        // Render treemap
+        // Render treemap and file tree
         treemapVisualizer.setData(data);
+        fileTreeExplorer.setData(data);
         
     } catch (error) {
         alert('Error scanning directory: ' + error.message);

@@ -26,6 +26,242 @@ body {
     stroke-width: 2;
 }
 
+/* ============================================================================= */
+/* FILE TREE EXPLORER STYLES */
+/* ============================================================================= */
+
+.file-tree {
+    user-select: none;
+}
+
+.tree-node {
+    margin: 0;
+}
+
+.tree-node-header {
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    border-radius: 3px;
+    margin: 1px 0;
+    font-size: 0.9rem;
+    position: relative;
+    gap: 6px;
+}
+
+.tree-node-header:hover {
+    background-color: #e9ecef;
+}
+
+.tree-node-header.selected {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.tree-node-header.selected .node-size {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.tree-node-header.selected .copy-path-btn {
+    opacity: 1;
+    color: white;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.tree-node-header.selected .copy-path-btn:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.expand-icon {
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 4px;
+    font-size: 10px;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+}
+
+.node-icon {
+    margin-right: 6px;
+    font-size: 16px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.node-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 100px;
+}
+
+/* Inline size bar (left of size text) */
+.size-bar-inline-container {
+    width: 60px;
+    height: 6px;
+    background-color: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.size-bar-fill {
+    height: 100%;
+    transition: width 0.3s ease, background-color 0.3s ease;
+    border-radius: 3px;
+}
+
+.node-size {
+    font-size: 0.85em;
+    color: #6c757d;
+    white-space: nowrap;
+    font-family: 'Courier New', monospace;
+    min-width: 60px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.copy-path-btn {
+    opacity: 0;
+    transition: opacity 0.2s ease, background-color 0.15s ease, border-color 0.15s ease;
+    background-color: transparent;
+    border: 1px solid #d0d0d0;
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    font-weight: 500;
+    color: #495057;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: opacity 0.2s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.tree-node-header:hover .copy-path-btn {
+    opacity: 1;
+}
+
+.copy-path-btn:hover {
+    background-color: #f0f0f0;
+    border-color: #0d6efd;
+    color: #0d6efd;
+}
+
+.copy-path-btn:active {
+    transform: scale(0.95);
+}
+
+/* Copy notification */
+.copy-notification {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background-color: #28a745;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 10000;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.copy-notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.tree-node-children {
+    margin-left: 0;
+}
+
+/* ============================================================================= */
+/* RESIZE HANDLE STYLES */
+/* ============================================================================= */
+
+.resize-handle {
+    height: 8px;
+    background-color: #dee2e6;
+    cursor: ns-resize;
+    position: relative;
+    flex-shrink: 0;
+    transition: background-color 0.2s ease;
+}
+
+.resize-handle:hover {
+    background-color: #0d6efd;
+}
+
+.resize-handle.dragging {
+    background-color: #0d6efd;
+}
+
+.resize-handle-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 3px;
+    background-color: #6c757d;
+    border-radius: 2px;
+    pointer-events: none;
+}
+
+.resize-handle:hover .resize-handle-indicator,
+.resize-handle.dragging .resize-handle-indicator {
+    background-color: white;
+}
+
+/* ============================================================================= */
+/* EXPLORER PANEL STYLES */
+/* ============================================================================= */
+
+#explorerPanel {
+    display: flex;
+    flex-direction: column;
+}
+
+#fileTree {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+#fileTree::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+#fileTree::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+#fileTree::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+#fileTree::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* ============================================================================= */
+/* ORIGINAL STYLES */
+/* ============================================================================= */
+
 .color-legend-item {
     display: flex;
     align-items: center;

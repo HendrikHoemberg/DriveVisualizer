@@ -460,4 +460,54 @@ class TreemapVisualizer {
         this.minPixelSize = size;
         this.render();
     }
+    
+    // Focus on a specific node (called from file tree)
+    focusOnNode(node) {
+        // Find the node in the current view
+        const nodeInCurrentView = this.findNodeInTree(this.currentRoot, node);
+        
+        if (nodeInCurrentView) {
+            // Node is in current view, just select it
+            this.selectedNode = nodeInCurrentView;
+            this.render();
+            this.onNodeSelect(nodeInCurrentView);
+        } else {
+            // Node is not in current view, need to navigate to it
+            // First, reset to root view
+            this.currentRoot = this.data;
+            
+            // Then select the node
+            const nodeInFullTree = this.findNodeInTree(this.data, node);
+            if (nodeInFullTree) {
+                this.selectedNode = nodeInFullTree;
+                this.render();
+                this.onNodeSelect(nodeInFullTree);
+            }
+        }
+    }
+    
+    // Find a node in the tree by comparing paths or references
+    findNodeInTree(root, targetNode) {
+        if (!root) return null;
+        
+        // Compare by path for safety
+        if (root.path === targetNode.path) {
+            return root;
+        }
+        
+        // Also try direct reference comparison
+        if (root === targetNode) {
+            return root;
+        }
+        
+        // Search in children
+        if (root.children) {
+            for (let child of root.children) {
+                const found = this.findNodeInTree(child, targetNode);
+                if (found) return found;
+            }
+        }
+        
+        return null;
+    }
 }
