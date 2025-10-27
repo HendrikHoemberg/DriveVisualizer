@@ -242,6 +242,18 @@ class FileTreeExplorer {
         }
     }
     
+    selectAndCollapseNode(node) {
+        if (node) {
+            // Collapse the node if it's a directory
+            if (node.directory && this.expandedNodes.has(node)) {
+                this.expandedNodes.delete(node);
+            }
+            // Expand only ancestors, not the node itself
+            this.expandToNode(node, true);
+            this.selectNode(node);
+        }
+    }
+    
     expandToNode(targetNode, expandOnlyAncestors = false) {
         // Find path from root to target node and expand all ancestors
         const path = this.findPathToNode(this.data, targetNode);

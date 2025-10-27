@@ -36,7 +36,7 @@ function initializeTreemap() {
     });
     
     // Set callback for node selection
-    treemapVisualizer.setNodeSelectCallback((node) => {
+    treemapVisualizer.setNodeSelectCallback((node, navigationType) => {
         if (!syncingSelection) {
             syncingSelection = true;
             updatePathDisplay(node.path);
@@ -44,7 +44,12 @@ function initializeTreemap() {
             
             // Sync with file tree
             if (fileTreeExplorer) {
-                fileTreeExplorer.selectNodeExternal(node);
+                if (navigationType === 'navigateToParent') {
+                    // When navigating to parent with left arrow, collapse the parent folder
+                    fileTreeExplorer.selectAndCollapseNode(node);
+                } else {
+                    fileTreeExplorer.selectNodeExternal(node);
+                }
             }
             syncingSelection = false;
         }

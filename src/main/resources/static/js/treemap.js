@@ -286,7 +286,7 @@ class TreemapVisualizer {
         if (parent) {
             this.selectedNode = parent;
             this.render();
-            this.onNodeSelect(this.selectedNode);
+            this.onNodeSelect(this.selectedNode, 'navigateToParent');
         }
     }
     
@@ -441,9 +441,9 @@ class TreemapVisualizer {
     // CALLBACKS & CONFIGURATION
     // =============================================================================
     
-    onNodeSelect(node) {
+    onNodeSelect(node, navigationType = null) {
         if (this.nodeSelectCallback) {
-            this.nodeSelectCallback(node);
+            this.nodeSelectCallback(node, navigationType);
         }
     }
     
