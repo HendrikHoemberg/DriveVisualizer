@@ -6,6 +6,7 @@ class FileTreeExplorer {
     constructor(containerElement) {
         this.container = containerElement;
         this.data = null;
+        this.originalData = null; // Store the original root for reset
         this.expandedNodes = new Set();
         this.selectedNode = null;
         this.nodeSelectCallback = null;
@@ -18,6 +19,7 @@ class FileTreeExplorer {
     
     setData(data) {
         this.data = data;
+        this.originalData = data; // Store the original root
         this.expandedNodes.clear();
         this.nodeElements.clear();
         
@@ -251,6 +253,36 @@ class FileTreeExplorer {
             // Expand only ancestors, not the node itself
             this.expandToNode(node, true);
             this.selectNode(node);
+        }
+    }
+    
+    setRootNode(node) {
+        if (node) {
+            // Change the root of the file tree to the specified node
+            this.data = node;
+            this.expandedNodes.clear();
+            this.nodeElements.clear();
+            
+            // Expand the new root node by default
+            this.expandedNodes.add(node);
+            this.selectedNode = node;
+            
+            this.render();
+        }
+    }
+    
+    resetToOriginalRoot() {
+        if (this.originalData) {
+            // Reset to the original root
+            this.data = this.originalData;
+            this.expandedNodes.clear();
+            this.nodeElements.clear();
+            
+            // Expand the original root node
+            this.expandedNodes.add(this.originalData);
+            this.selectedNode = this.originalData;
+            
+            this.render();
         }
     }
     

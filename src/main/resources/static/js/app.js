@@ -47,6 +47,15 @@ function initializeTreemap() {
                 if (navigationType === 'navigateToParent') {
                     // When navigating to parent with left arrow, collapse the parent folder
                     fileTreeExplorer.selectAndCollapseNode(node);
+                } else if (navigationType === 'zoomIn') {
+                    // When zooming in with spacebar, show only that folder in file explorer
+                    fileTreeExplorer.setRootNode(node);
+                } else if (navigationType === 'zoomOut') {
+                    // When zooming out with backspace, update file explorer root
+                    fileTreeExplorer.setRootNode(node);
+                } else if (navigationType === 'resetView') {
+                    // When resetting view with Esc, reset file explorer to original root
+                    fileTreeExplorer.resetToOriginalRoot();
                 } else {
                     fileTreeExplorer.selectNodeExternal(node);
                 }

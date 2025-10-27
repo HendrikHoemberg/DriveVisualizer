@@ -349,6 +349,7 @@ class TreemapVisualizer {
             this.currentRoot = node;
             this.selectedNode = node;
             this.render();
+            this.onNodeSelect(node, 'zoomIn');
         }
     }
     
@@ -359,7 +360,7 @@ class TreemapVisualizer {
                 this.currentRoot = parent;
                 this.selectedNode = parent;
                 this.render();
-                this.onNodeSelect(parent);
+                this.onNodeSelect(parent, 'zoomOut');
             }
         }
     }
@@ -368,7 +369,7 @@ class TreemapVisualizer {
         this.currentRoot = this.data;
         this.selectedNode = this.data;
         this.render();
-        this.onNodeSelect(this.data);
+        this.onNodeSelect(this.data, 'resetView');
     }
     
     findParentInFullTree(root, node) {
