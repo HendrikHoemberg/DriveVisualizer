@@ -142,19 +142,6 @@ function initializeEventListeners() {
             document.getElementById('scanBtn').click();
         }
     });
-    
-    // File tree expand/collapse buttons
-    document.getElementById('expandAllBtn').addEventListener('click', () => {
-        if (fileTreeExplorer) {
-            fileTreeExplorer.expandAll();
-        }
-    });
-    
-    document.getElementById('collapseAllBtn').addEventListener('click', () => {
-        if (fileTreeExplorer) {
-            fileTreeExplorer.collapseAll();
-        }
-    });
 }
 
 // =============================================================================

@@ -11,6 +11,7 @@ class FileTreeExplorer {
         this.selectedNode = null;
         this.nodeSelectCallback = null;
         this.nodeElements = new Map(); // Maps node objects to DOM elements
+        this.parentMap = new WeakMap(); // Cache parent relationships
     }
     
     // =============================================================================
@@ -22,6 +23,10 @@ class FileTreeExplorer {
         this.originalData = data; // Store the original root
         this.expandedNodes.clear();
         this.nodeElements.clear();
+        this.parentMap = new WeakMap();
+        
+        // Pre-calculate parent relationships
+        this.buildParentMap(data, null);
         
         // Expand root node by default
         if (data) {
@@ -29,14 +34,25 @@ class FileTreeExplorer {
             this.selectedNode = data;
         }
         
-        this.render();
+        this.renderFull();
+    }
+    
+    // Build parent map for O(1) parent lookups
+    buildParentMap(node, parent) {
+        if (parent) {
+            this.parentMap.set(node, parent);
+        }
+        if (node.children) {
+            node.children.forEach(child => this.buildParentMap(child, node));
+        }
     }
     
     // =============================================================================
     // RENDERING
     // =============================================================================
     
-    render() {
+    renderFull() {
+        // Full re-render (used for new data or root changes)
         this.container.innerHTML = '';
         
         if (!this.data) {
@@ -48,6 +64,46 @@ class FileTreeExplorer {
         tree.className = 'file-tree';
         this.renderNode(this.data, tree, 0);
         this.container.appendChild(tree);
+    }
+    
+    // Update only the visual states without re-rendering everything
+    updateNodeStates() {
+        this.nodeElements.forEach((element, node) => {
+            const header = element.querySelector('.tree-node-header');
+            if (!header) return;
+            
+            // Update selection state
+            if (this.selectedNode === node) {
+                header.classList.add('selected');
+            } else {
+                header.classList.remove('selected');
+            }
+            
+            // Update expand/collapse icon
+            const expandIcon = header.querySelector('.expand-icon');
+            if (expandIcon && node.directory && node.children && node.children.length > 0) {
+                expandIcon.textContent = this.expandedNodes.has(node) ? '▼' : '▶';
+            }
+            
+            // Update children visibility
+            const childrenContainer = element.querySelector('.tree-node-children');
+            if (childrenContainer) {
+                if (this.expandedNodes.has(node)) {
+                    if (childrenContainer.style.display === 'none') {
+                        // Lazy render children when expanding
+                        childrenContainer.innerHTML = '';
+                        const sortedChildren = [...node.children].sort((a, b) => b.size - a.size);
+                        const level = parseInt(element.dataset.level) + 1;
+                        sortedChildren.forEach(child => {
+                            this.renderNode(child, childrenContainer, level);
+                        });
+                    }
+                    childrenContainer.style.display = 'block';
+                } else {
+                    childrenContainer.style.display = 'none';
+                }
+            }
+        });
     }
     
     renderNode(node, parentElement, level) {
@@ -94,10 +150,10 @@ class FileTreeExplorer {
         name.textContent = node.name;
         name.title = node.path;
         
-        // Calculate percentage for size bar
+        // Calculate percentage for size bar using cached parent
         let percentage = 0;
         if (this.data) {
-            const parent = this.findParentNode(this.data, node);
+            const parent = this.parentMap.get(node);
             const referenceSize = parent ? parent.size : this.data.size;
             percentage = Math.min(100, (node.size / referenceSize) * 100);
         }
@@ -151,7 +207,7 @@ class FileTreeExplorer {
         
         nodeItem.appendChild(nodeHeader);
         
-        // Children container
+        // Children container (lazy loading - only render when expanded)
         if (node.directory && node.children && node.children.length > 0) {
             const childrenContainer = document.createElement('div');
             childrenContainer.className = 'tree-node-children';
@@ -168,6 +224,7 @@ class FileTreeExplorer {
                     this.renderNode(child, childrenContainer, level + 1);
                 });
             } else {
+                // Don't render children if not expanded (lazy loading)
                 childrenContainer.style.display = 'none';
             }
             
@@ -187,42 +244,39 @@ class FileTreeExplorer {
         } else {
             this.expandedNodes.add(node);
         }
-        this.render();
+        // Use incremental update instead of full re-render
+        this.updateNodeStates();
     }
     
     selectNode(node) {
+        const previousNode = this.selectedNode;
         this.selectedNode = node;
-        this.render();
         
-        // Scroll to selected node
-        const nodeElement = this.nodeElements.get(node);
-        if (nodeElement) {
-            nodeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Update only the affected nodes
+        if (previousNode) {
+            const prevElement = this.nodeElements.get(previousNode);
+            if (prevElement) {
+                const prevHeader = prevElement.querySelector('.tree-node-header');
+                if (prevHeader) {
+                    prevHeader.classList.remove('selected');
+                }
+            }
+        }
+        
+        const currentElement = this.nodeElements.get(node);
+        if (currentElement) {
+            const currentHeader = currentElement.querySelector('.tree-node-header');
+            if (currentHeader) {
+                currentHeader.classList.add('selected');
+            }
+            
+            // Scroll to selected node
+            currentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
         
         if (this.nodeSelectCallback) {
             this.nodeSelectCallback(node);
         }
-    }
-    
-    expandAll() {
-        this.expandAllNodes(this.data);
-        this.render();
-    }
-    
-    expandAllNodes(node) {
-        if (node.directory && node.children && node.children.length > 0) {
-            this.expandedNodes.add(node);
-            node.children.forEach(child => this.expandAllNodes(child));
-        }
-    }
-    
-    collapseAll() {
-        this.expandedNodes.clear();
-        if (this.data) {
-            this.expandedNodes.add(this.data);
-        }
-        this.render();
     }
     
     // =============================================================================
@@ -263,11 +317,16 @@ class FileTreeExplorer {
             this.expandedNodes.clear();
             this.nodeElements.clear();
             
+            // Rebuild parent map for new root
+            this.parentMap = new WeakMap();
+            this.buildParentMap(node, null);
+            
             // Expand the new root node by default
             this.expandedNodes.add(node);
             this.selectedNode = node;
             
-            this.render();
+            // Full re-render for root change
+            this.renderFull();
         }
     }
     
@@ -278,11 +337,16 @@ class FileTreeExplorer {
             this.expandedNodes.clear();
             this.nodeElements.clear();
             
+            // Rebuild parent map for original root
+            this.parentMap = new WeakMap();
+            this.buildParentMap(this.originalData, null);
+            
             // Expand the original root node
             this.expandedNodes.add(this.originalData);
             this.selectedNode = this.originalData;
             
-            this.render();
+            // Full re-render for root change
+            this.renderFull();
         }
     }
     
@@ -299,6 +363,8 @@ class FileTreeExplorer {
                     }
                 }
             });
+            // Use incremental update instead of full re-render
+            this.updateNodeStates();
         }
     }
     
@@ -352,18 +418,9 @@ class FileTreeExplorer {
         return parseFloat((bytes / Math.pow(kilobyte, unitIndex)).toFixed(2)) + ' ' + units[unitIndex];
     }
     
-    findParentNode(root, targetNode) {
-        if (!root || !root.children) return null;
-        
-        for (let child of root.children) {
-            if (child === targetNode) {
-                return root;
-            }
-            const found = this.findParentNode(child, targetNode);
-            if (found) return found;
-        }
-        
-        return null;
+    // Use cached parent map instead of recursive search
+    getParentNode(node) {
+        return this.parentMap.get(node) || null;
     }
     
     getSizeColor(percentage) {
