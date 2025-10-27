@@ -61,12 +61,12 @@ public class FileNode {
      * Sortiert die Kind-Elemente nach Größe und Name (rekursiv).
      */
     public void sortChildren() {
-        children.sort((a, b) -> {
-            int sizeCompare = Long.compare(b.size, a.size);
+        children.sort((firstChild, secondChild) -> {
+            int sizeCompare = Long.compare(secondChild.size, firstChild.size);
             if (sizeCompare != 0) {
                 return sizeCompare;
             }
-            return a.name.compareToIgnoreCase(b.name);
+            return firstChild.name.compareToIgnoreCase(secondChild.name);
         });
         
         for (FileNode child : children) {

@@ -74,8 +74,8 @@ class FileTreeExplorer {
         if (node.directory && node.children && node.children.length > 0) {
             expandIcon.textContent = this.expandedNodes.has(node) ? '▼' : '▶';
             expandIcon.style.cursor = 'pointer';
-            expandIcon.addEventListener('click', (e) => {
-                e.stopPropagation();
+            expandIcon.addEventListener('click', (event) => {
+                event.stopPropagation();
                 this.toggleExpand(node);
             });
         } else {
@@ -124,8 +124,8 @@ class FileTreeExplorer {
         copyBtn.className = 'copy-path-btn';
         copyBtn.textContent = 'copy path';
         copyBtn.title = 'Copy path to clipboard';
-        copyBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
+        copyBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
             this.copyPathToClipboard(node.path);
         });
         
@@ -142,8 +142,8 @@ class FileTreeExplorer {
         });
         
         // Double-click to expand/collapse
-        nodeHeader.addEventListener('dblclick', (e) => {
-            e.stopPropagation();
+        nodeHeader.addEventListener('dblclick', (event) => {
+            event.stopPropagation();
             if (node.directory && node.children && node.children.length > 0) {
                 this.toggleExpand(node);
             }
@@ -386,8 +386,8 @@ class FileTreeExplorer {
             await navigator.clipboard.writeText(path);
             // Show a brief notification
             this.showCopyNotification();
-        } catch (err) {
-            console.error('Failed to copy path:', err);
+        } catch (error) {
+            console.error('Failed to copy path:', error);
             // Fallback for older browsers
             const textArea = document.createElement('textarea');
             textArea.value = path;
@@ -399,8 +399,8 @@ class FileTreeExplorer {
             try {
                 document.execCommand('copy');
                 this.showCopyNotification();
-            } catch (err) {
-                console.error('Fallback copy failed:', err);
+            } catch (error) {
+                console.error('Fallback copy failed:', error);
             }
             document.body.removeChild(textArea);
         }
@@ -452,32 +452,32 @@ class ResizeHandle {
     }
     
     setupEventListeners() {
-        this.handle.addEventListener('mousedown', (e) => this.startDragging(e));
-        document.addEventListener('mousemove', (e) => this.drag(e));
+        this.handle.addEventListener('mousedown', (event) => this.startDragging(event));
+        document.addEventListener('mousemove', (event) => this.drag(event));
         document.addEventListener('mouseup', () => this.stopDragging());
         
         // Touch support for mobile
-        this.handle.addEventListener('touchstart', (e) => this.startDragging(e.touches[0]));
-        document.addEventListener('touchmove', (e) => this.drag(e.touches[0]));
+        this.handle.addEventListener('touchstart', (event) => this.startDragging(event.touches[0]));
+        document.addEventListener('touchmove', (event) => this.drag(event.touches[0]));
         document.addEventListener('touchend', () => this.stopDragging());
     }
     
-    startDragging(e) {
+    startDragging(mouseEvent) {
         this.isDragging = true;
-        this.startY = e.clientY;
+        this.startY = mouseEvent.clientY;
         this.startHeight = this.topPanel.offsetHeight;
         
         this.handle.classList.add('dragging');
         document.body.style.cursor = 'ns-resize';
         document.body.style.userSelect = 'none';
         
-        e.preventDefault();
+        mouseEvent.preventDefault();
     }
     
-    drag(e) {
+    drag(mouseEvent) {
         if (!this.isDragging) return;
         
-        const deltaY = e.clientY - this.startY;
+        const deltaY = mouseEvent.clientY - this.startY;
         const newHeight = this.startHeight + deltaY;
         
         const container = this.topPanel.parentElement;
