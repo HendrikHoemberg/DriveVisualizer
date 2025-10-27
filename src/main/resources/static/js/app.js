@@ -35,7 +35,6 @@ function initializeTreemap() {
         minPixelSize: minPixelSize
     });
     
-    // Set callback for node selection
     treemapVisualizer.setNodeSelectCallback((node, navigationType) => {
         if (!syncingSelection) {
             syncingSelection = true;
@@ -70,7 +69,6 @@ function initializeFileTree() {
     const fileTreeContainer = document.getElementById('fileTree');
     fileTreeExplorer = new FileTreeExplorer(fileTreeContainer);
     
-    // Set callback for node selection
     fileTreeExplorer.setNodeSelectCallback((node) => {
         if (!syncingSelection) {
             syncingSelection = true;
@@ -390,21 +388,6 @@ function showLoading(show) {
     } else {
         overlay.classList.add('d-none');
     }
-}
-
-// =============================================================================
-// UTILITY FUNCTIONS
-// =============================================================================
-
-// Format size
-function formatSize(bytes) {
-    if (bytes === 0) return '0 B';
-    
-    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-    const kilobyte = 1024;
-    const unitIndex = Math.floor(Math.log(bytes) / Math.log(kilobyte));
-    
-    return parseFloat((bytes / Math.pow(kilobyte, unitIndex)).toFixed(2)) + ' ' + units[unitIndex];
 }
 
 // =============================================================================

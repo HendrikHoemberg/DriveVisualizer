@@ -18,6 +18,7 @@ class FileTreeExplorer {
     // DATA MANAGEMENT
     // =============================================================================
     
+    // Sets the data for the file tree and initializes the view
     setData(data) {
         this.data = data;
         this.originalData = data; // Store the original root
@@ -37,7 +38,7 @@ class FileTreeExplorer {
         this.renderFull();
     }
     
-    // Build parent map for O(1) parent lookups
+    // Build parent map for parent lookups
     buildParentMap(node, parent) {
         if (parent) {
             this.parentMap.set(node, parent);
@@ -51,8 +52,8 @@ class FileTreeExplorer {
     // RENDERING
     // =============================================================================
     
+    // Performs a full re-render of the file tree
     renderFull() {
-        // Full re-render (used for new data or root changes)
         this.container.innerHTML = '';
         
         if (!this.data) {
@@ -90,7 +91,6 @@ class FileTreeExplorer {
             if (childrenContainer) {
                 if (this.expandedNodes.has(node)) {
                     if (childrenContainer.style.display === 'none') {
-                        // Lazy render children when expanding
                         childrenContainer.innerHTML = '';
                         const sortedChildren = [...node.children].sort((a, b) => b.size - a.size);
                         const level = parseInt(element.dataset.level) + 1;
@@ -106,6 +106,7 @@ class FileTreeExplorer {
         });
     }
     
+    // Renders a single node in the file tree
     renderNode(node, parentElement, level) {
         const nodeItem = document.createElement('div');
         nodeItem.className = 'tree-node';
@@ -192,22 +193,13 @@ class FileTreeExplorer {
         nodeHeader.appendChild(size);
         nodeHeader.appendChild(copyBtn);
         
-        // Click handler for selection
         nodeHeader.addEventListener('click', () => {
             this.selectNode(node);
         });
         
-        // Double-click to expand/collapse
-        nodeHeader.addEventListener('dblclick', (event) => {
-            event.stopPropagation();
-            if (node.directory && node.children && node.children.length > 0) {
-                this.toggleExpand(node);
-            }
-        });
-        
         nodeItem.appendChild(nodeHeader);
         
-        // Children container (lazy loading - only render when expanded)
+        // Children container (only render when expanded)
         if (node.directory && node.children && node.children.length > 0) {
             const childrenContainer = document.createElement('div');
             childrenContainer.className = 'tree-node-children';
@@ -215,7 +207,7 @@ class FileTreeExplorer {
             if (this.expandedNodes.has(node)) {
                 childrenContainer.style.display = 'block';
                 
-                // Sort children by size only (largest first)
+                // Sort children by size (largest first)
                 const sortedChildren = [...node.children].sort((a, b) => {
                     return b.size - a.size;
                 });
@@ -224,7 +216,7 @@ class FileTreeExplorer {
                     this.renderNode(child, childrenContainer, level + 1);
                 });
             } else {
-                // Don't render children if not expanded (lazy loading)
+                // Don't render children if not expanded
                 childrenContainer.style.display = 'none';
             }
             
@@ -244,10 +236,10 @@ class FileTreeExplorer {
         } else {
             this.expandedNodes.add(node);
         }
-        // Use incremental update instead of full re-render
         this.updateNodeStates();
     }
     
+    // Selects the specified node in the file tree
     selectNode(node) {
         const previousNode = this.selectedNode;
         this.selectedNode = node;
@@ -291,6 +283,7 @@ class FileTreeExplorer {
         }
     }
     
+    // Selects a node externally, expanding to it if necessary
     selectNodeExternal(node) {
         if (node) {
             this.expandToNode(node, true);
@@ -298,6 +291,7 @@ class FileTreeExplorer {
         }
     }
     
+    // Selects and collapses the specified node
     selectAndCollapseNode(node) {
         if (node) {
             // Collapse the node if it's a directory
@@ -350,12 +344,12 @@ class FileTreeExplorer {
         }
     }
     
+    // Expands the tree to make the target node visible
     expandToNode(targetNode, expandOnlyAncestors = false) {
         // Find path from root to target node and expand all ancestors
         const path = this.findPathToNode(this.data, targetNode);
         if (path) {
             path.forEach((node, index) => {
-                // If expandOnlyAncestors is true, skip the last node (the target node itself)
                 const isTargetNode = (index === path.length - 1);
                 if (!expandOnlyAncestors || !isTargetNode) {
                     if (node.directory && node.children && node.children.length > 0) {
@@ -363,11 +357,11 @@ class FileTreeExplorer {
                     }
                 }
             });
-            // Use incremental update instead of full re-render
             this.updateNodeStates();
         }
     }
     
+    // Finds the path from current node to target node
     findPathToNode(currentNode, targetNode, path = []) {
         path.push(currentNode);
         
@@ -387,6 +381,7 @@ class FileTreeExplorer {
         return null;
     }
     
+    // Finds a node by its path
     findNodeByPath(currentNode, path) {
         if (currentNode.path === path) {
             return currentNode;
@@ -408,63 +403,39 @@ class FileTreeExplorer {
     // UTILITY FUNCTIONS
     // =============================================================================
     
-    formatSize(bytes) {
-        if (bytes === 0) return '0 B';
-        
-        const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-        const kilobyte = 1024;
-        const unitIndex = Math.floor(Math.log(bytes) / Math.log(kilobyte));
-        
-        return parseFloat((bytes / Math.pow(kilobyte, unitIndex)).toFixed(2)) + ' ' + units[unitIndex];
-    }
-    
-    // Use cached parent map instead of recursive search
+    // Use cached parent map to get parent node
     getParentNode(node) {
         return this.parentMap.get(node) || null;
     }
     
+    // Returns color based on size percentage
     getSizeColor(percentage) {
-        // Color gradient from green (small) to yellow to red (large)
+        // Color gradient from green (small) to yellow to red (large), relative to the parent
         if (percentage < 25) {
-            return '#28a745'; // Green
+            return '#28a745'; 
         } else if (percentage < 50) {
-            return '#7bc043'; // Light green
+            return '#7bc043'; 
         } else if (percentage < 75) {
-            return '#ffc107'; // Yellow/Orange
+            return '#ffc107'; 
         } else if (percentage < 90) {
-            return '#fd7e14'; // Orange
+            return '#fd7e14'; 
         } else {
-            return '#dc3545'; // Red
+            return '#dc3545'; 
         }
     }
     
+    // Copies the given path to the clipboard
     async copyPathToClipboard(path) {
         try {
             await navigator.clipboard.writeText(path);
-            // Show a brief notification
             this.showCopyNotification();
         } catch (error) {
             console.error('Failed to copy path:', error);
-            // Fallback for older browsers
-            const textArea = document.createElement('textarea');
-            textArea.value = path;
-            textArea.style.position = 'fixed';
-            textArea.style.opacity = '0';
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            try {
-                document.execCommand('copy');
-                this.showCopyNotification();
-            } catch (error) {
-                console.error('Fallback copy failed:', error);
-            }
-            document.body.removeChild(textArea);
         }
     }
     
+    // Shows a notification-toast that the path was copied
     showCopyNotification() {
-        // Create or update notification
         let notification = document.getElementById('copyNotification');
         if (!notification) {
             notification = document.createElement('div');
@@ -474,10 +445,8 @@ class FileTreeExplorer {
             document.body.appendChild(notification);
         }
         
-        // Show notification
         notification.classList.add('show');
         
-        // Hide after 2 seconds
         setTimeout(() => {
             notification.classList.remove('show');
         }, 2000);
@@ -487,6 +456,7 @@ class FileTreeExplorer {
     // CALLBACKS
     // =============================================================================
     
+    // Sets the callback for node selection events
     setNodeSelectCallback(callback) {
         this.nodeSelectCallback = callback;
     }
@@ -508,15 +478,11 @@ class ResizeHandle {
         this.setupEventListeners();
     }
     
+    // Sets up event listeners for dragging
     setupEventListeners() {
         this.handle.addEventListener('mousedown', (event) => this.startDragging(event));
         document.addEventListener('mousemove', (event) => this.drag(event));
         document.addEventListener('mouseup', () => this.stopDragging());
-        
-        // Touch support for mobile
-        this.handle.addEventListener('touchstart', (event) => this.startDragging(event.touches[0]));
-        document.addEventListener('touchmove', (event) => this.drag(event.touches[0]));
-        document.addEventListener('touchend', () => this.stopDragging());
     }
     
     startDragging(mouseEvent) {
@@ -549,7 +515,6 @@ class ResizeHandle {
             const percentage = (newHeight / containerHeight) * 100;
             localStorage.setItem('explorerPanelHeightPercent', percentage);
             
-            // Trigger resize event for canvas
             window.dispatchEvent(new Event('resize'));
         }
     }
@@ -563,6 +528,7 @@ class ResizeHandle {
         document.body.style.userSelect = '';
     }
     
+    // Loads and applies saved panel size
     loadSavedSize() {
         const saved = localStorage.getItem('explorerPanelHeightPercent');
         if (saved) {
