@@ -140,6 +140,14 @@ function initializeEventListeners() {
             document.getElementById('scanBtn').click();
         }
     });
+    
+    // Prevent arrow key scrolling in file tree
+    const fileTree = document.getElementById('fileTree');
+    fileTree.addEventListener('keydown', (event) => {
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+            event.preventDefault();
+        }
+    });
 }
 
 // =============================================================================

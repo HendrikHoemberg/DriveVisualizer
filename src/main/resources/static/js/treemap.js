@@ -397,7 +397,7 @@ class TreemapVisualizer {
     showTooltip(node, mouseX, mouseY) {
         if (!this.tooltip) return;
         
-        const size = this.formatSize(node.size);
+        const size = formatSize(node.size);
         const type = node.directory ? 'Directory' : 'File';
         const extension = node.extension ? ` (.${node.extension})` : '';
         

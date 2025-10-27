@@ -174,7 +174,7 @@ class FileTreeExplorer {
         // Size
         const size = document.createElement('span');
         size.className = 'node-size';
-        size.textContent = this.formatSize(node.size);
+        size.textContent = formatSize(node.size);
         
         // Copy path button
         const copyBtn = document.createElement('button');
