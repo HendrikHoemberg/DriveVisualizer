@@ -114,7 +114,7 @@ function initializeEventListeners() {
     document.getElementById('addMappingBtn').addEventListener('click', () => {
         addColorMappingRow('', '#808080');
     });
-    
+     
     // Reset mappings button
     document.getElementById('resetMappingsBtn').addEventListener('click', () => {
         if (confirm('Möchten Sie wirklich alle Farbzuordnungen zurücksetzen?')) {

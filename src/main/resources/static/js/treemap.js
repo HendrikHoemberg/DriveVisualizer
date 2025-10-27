@@ -235,16 +235,16 @@ class TreemapVisualizer {
         if (!this.selectedNode) return;
         
         switch(event.key) {
-            case 'ArrowLeft':
+            case 'ArrowUp':
                 this.navigateToSibling(-1);
                 break;
-            case 'ArrowRight':
+            case 'ArrowDown':
                 this.navigateToSibling(1);
                 break;
-            case 'ArrowUp':
+            case 'ArrowLeft':
                 this.navigateToParent();
                 break;
-            case 'ArrowDown':
+            case 'ArrowRight':
                 this.navigateToFirstChild();
                 break;
             case ' ':
@@ -322,7 +322,7 @@ class TreemapVisualizer {
         }
         return null;
     }
-    
+     
     findSmallestNodeAtPosition(positionX, positionY) {
         let smallestNode = null;
         let smallestArea = Infinity;

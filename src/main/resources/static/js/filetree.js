@@ -68,7 +68,7 @@ class FileTreeExplorer {
         // Expand/collapse icon
         const expandIcon = document.createElement('span');
         expandIcon.className = 'expand-icon';
-        
+         
         if (node.directory && node.children && node.children.length > 0) {
             expandIcon.textContent = this.expandedNodes.has(node) ? '▼' : '▶';
             expandIcon.style.cursor = 'pointer';
@@ -157,11 +157,8 @@ class FileTreeExplorer {
             if (this.expandedNodes.has(node)) {
                 childrenContainer.style.display = 'block';
                 
-                // Sort children: directories first, then by size
+                // Sort children by size only (largest first)
                 const sortedChildren = [...node.children].sort((a, b) => {
-                    if (a.directory !== b.directory) {
-                        return a.directory ? -1 : 1;
-                    }
                     return b.size - a.size;
                 });
                 
@@ -198,7 +195,7 @@ class FileTreeExplorer {
         // Scroll to selected node
         const nodeElement = this.nodeElements.get(node);
         if (nodeElement) {
-            nodeElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            nodeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
         
         if (this.nodeSelectCallback) {
@@ -240,18 +237,22 @@ class FileTreeExplorer {
     
     selectNodeExternal(node) {
         if (node) {
-            this.expandToNode(node);
+            this.expandToNode(node, true);
             this.selectNode(node);
         }
     }
     
-    expandToNode(targetNode) {
+    expandToNode(targetNode, expandOnlyAncestors = false) {
         // Find path from root to target node and expand all ancestors
         const path = this.findPathToNode(this.data, targetNode);
         if (path) {
-            path.forEach(node => {
-                if (node.directory && node.children && node.children.length > 0) {
-                    this.expandedNodes.add(node);
+            path.forEach((node, index) => {
+                // If expandOnlyAncestors is true, skip the last node (the target node itself)
+                const isTargetNode = (index === path.length - 1);
+                if (!expandOnlyAncestors || !isTargetNode) {
+                    if (node.directory && node.children && node.children.length > 0) {
+                        this.expandedNodes.add(node);
+                    }
                 }
             });
         }

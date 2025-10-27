@@ -21,9 +21,9 @@ A comprehensive keyboard shortcuts legend has been added to the bottom of the Dr
 ### **Navigation (Treemap)**
 | Shortcut | Description |
 |----------|-------------|
-| `←` `→` | Navigate to sibling nodes |
-| `↑` | Navigate to parent node |
-| `↓` | Navigate to first child node |
+| `↑` `↓` | Navigate between sibling nodes |
+| `←` | Navigate to parent node (übergeordnet) |
+| `→` | Navigate to first child node (untergeordnet) |
 | `Space` | Zoom into selected directory |
 | `Backspace` | Zoom out to parent directory |
 | `Esc` | Reset view to root |
