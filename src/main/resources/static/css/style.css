@@ -238,6 +238,11 @@ body {
 #fileTree {
     overflow-y: auto;
     overflow-x: auto;
+    outline: none;
+}
+
+#fileTree:focus {
+    outline: none;
 }
 
 #fileTree::-webkit-scrollbar {
