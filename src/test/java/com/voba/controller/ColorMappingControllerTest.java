@@ -37,8 +37,8 @@ class ColorMappingControllerTest {
     @Test
     void testGetColorMappings() throws Exception {
         List<ColorMapping> mockMappings = new ArrayList<>();
-        mockMappings.add(new ColorMapping("java", "#FF0000", "Java"));
-        mockMappings.add(new ColorMapping("txt", "#00FF00", "Text"));
+        mockMappings.add(new ColorMapping("java", "#FF0000"));
+        mockMappings.add(new ColorMapping("txt", "#00FF00"));
 
         when(colorMappingService.getColorMappings()).thenReturn(mockMappings);
 
@@ -65,7 +65,7 @@ class ColorMappingControllerTest {
     @Test
     void testSaveColorMappings() throws Exception {
         List<ColorMapping> testMappings = new ArrayList<>();
-        testMappings.add(new ColorMapping("java", "#FF0000", "Java"));
+        testMappings.add(new ColorMapping("java", "#FF0000"));
 
         doNothing().when(colorMappingService).saveColorMappings(any());
 
@@ -81,7 +81,7 @@ class ColorMappingControllerTest {
     @Test
     void testSaveColorMappingsWithException() throws Exception {
         List<ColorMapping> testMappings = new ArrayList<>();
-        testMappings.add(new ColorMapping("java", "#FF0000", "Java"));
+        testMappings.add(new ColorMapping("java", "#FF0000"));
 
         doThrow(new RuntimeException("Save failed")).when(colorMappingService).saveColorMappings(any());
 
@@ -97,7 +97,7 @@ class ColorMappingControllerTest {
     @Test
     void testResetToDefaults() throws Exception {
         List<ColorMapping> defaultMappings = new ArrayList<>();
-        defaultMappings.add(new ColorMapping("default", "#000000", "Default"));
+        defaultMappings.add(new ColorMapping("default", "#000000"));
 
         when(colorMappingService.resetToDefaults()).thenReturn(defaultMappings);
 

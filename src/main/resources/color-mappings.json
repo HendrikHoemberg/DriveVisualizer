@@ -1,70 +1,43 @@
-[
-  {
-    "extension": "js",
-    "color": "#f7df1e"
-  },
-  {
-    "extension": "java",
-    "color": "#007396"
-  },
-  {
-    "extension": "py",
-    "color": "#3776ab"
-  },
-  {
-    "extension": "html",
-    "color": "#e34c26"
-  },
-  {
-    "extension": "css",
-    "color": "#1572b6"
-  },
-  {
-    "extension": "json",
-    "color": "#292929"
-  },
-  {
-    "extension": "xml",
-    "color": "#0060ac"
-  },
-  {
-    "extension": "txt",
-    "color": "#808080"
-  },
-  {
-    "extension": "jpg",
-    "color": "#ff6b6b"
-  },
-  {
-    "extension": "jpeg",
-    "color": "#ff6b6b"
-  },
-  {
-    "extension": "png",
-    "color": "#4ecdc4"
-  },
-  {
-    "extension": "gif",
-    "color": "#9b59b6"
-  },
-  {
-    "extension": "mp4",
-    "color": "#e74c3c"
-  },
-  {
-    "extension": "mp3",
-    "color": "#3498db"
-  },
-  {
-    "extension": "pdf",
-    "color": "#c0392b"
-  },
-  {
-    "extension": "zip",
-    "color": "#f39c12"
-  },
-  {
-    "extension": "rar",
-    "color": "#d35400"
-  }
-]
+[ {
+  "extension" : "js",
+  "color" : "#f7df1e"
+}, {
+  "extension" : "java",
+  "color" : "#f66151"
+}, {
+  "extension" : "html",
+  "color" : "#ff7800"
+}, {
+  "extension" : "css",
+  "color" : "#99c1f1"
+}, {
+  "extension" : "json",
+  "color" : "#292929"
+}, {
+  "extension" : "txt",
+  "color" : "#cdab8f"
+}, {
+  "extension" : "pdf",
+  "color" : "#63452c"
+}, {
+  "extension" : "zip",
+  "color" : "#dc8add"
+}, {
+  "extension" : "rar",
+  "color" : "#9141ac"
+}, {
+  "extension" : "xls",
+  "color" : "#33d17a"
+}, {
+  "extension" : "xlsx",
+  "color" : "#33d17a"
+}, {
+  "extension" : "doc",
+  "color" : "#1a5fb4"
+}, {
+  "extension" : "docx",
+  "color" : "#1a5fb4"
+}, {
+  "extension" : "csv",
+  "color" : "#e7ff00"
+} ]

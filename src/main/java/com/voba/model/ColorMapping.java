@@ -2,20 +2,18 @@ package com.voba.model;
 
 /**
  * Modellklasse für die Zuordnung von Dateierweiterungen zu Farben.
- * Enthält Informationen über Dateierweiterung, Farbwert und Anzeigenamen.
+ * Enthält Informationen über Dateierweiterung und Farbwert.
  */
 public class ColorMapping {
     private String extension;
     private String color;
-    private String name;
     
     public ColorMapping() {
     }
     
-    public ColorMapping(String extension, String color, String name) {
+    public ColorMapping(String extension, String color) {
         this.extension = extension;
         this.color = color;
-        this.name = name;
     }
     
     public String getExtension() {
@@ -32,13 +30,5 @@ public class ColorMapping {
     
     public void setColor(String color) {
         this.color = color;
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public void setName(String name) {
-        this.name = name;
     }
 }

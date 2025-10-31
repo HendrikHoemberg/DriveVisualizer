@@ -36,8 +36,8 @@ class ColorMappingServiceTest {
     void testSaveColorMappings(@TempDir Path tempDir) throws IOException {
         // Create test mappings
         List<ColorMapping> testMappings = new ArrayList<>();
-        testMappings.add(new ColorMapping("java", "#FF0000", "Java"));
-        testMappings.add(new ColorMapping("txt", "#00FF00", "Text"));
+        testMappings.add(new ColorMapping("java", "#FF0000"));
+        testMappings.add(new ColorMapping("txt", "#00FF00"));
         
         // This will save to user home directory
         assertDoesNotThrow(() -> colorMappingService.saveColorMappings(testMappings));
@@ -58,7 +58,7 @@ class ColorMappingServiceTest {
     @Test
     void testSaveAndRetrieve() throws IOException {
         List<ColorMapping> testMappings = new ArrayList<>();
-        testMappings.add(new ColorMapping("test", "#123456", "Test Extension"));
+        testMappings.add(new ColorMapping("test", "#123456"));
         
         colorMappingService.saveColorMappings(testMappings);
         
