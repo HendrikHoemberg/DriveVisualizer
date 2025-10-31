@@ -386,7 +386,10 @@ function addColorMappingRow(extension = '', color = '#808080', index = null) {
 
 // Update path display
 function updatePathDisplay(path) {
-    document.getElementById('currentPath').textContent = path || 'No directory selected';
+    const pathElement = document.getElementById('currentPath');
+    const displayPath = path || 'No directory selected';
+    pathElement.textContent = displayPath;
+    pathElement.setAttribute('title', displayPath);
 }
 
 // Update size display

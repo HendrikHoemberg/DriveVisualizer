@@ -286,10 +286,21 @@ body {
     font-size: 0.9em;
 }
 
+/* ============================================================================= */
+/* INFO BAR STYLES */
+/* ============================================================================= */
+
+.bg-light.border-bottom {
+    overflow: hidden;
+}
+
 #currentPath {
     font-family: monospace;
-    word-break: break-all;
     font-size: 0.9em;
+    display: inline;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .btn-primary {

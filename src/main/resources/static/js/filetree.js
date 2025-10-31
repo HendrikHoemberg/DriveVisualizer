@@ -263,7 +263,7 @@ class FileTreeExplorer {
             }
             
             // Scroll to selected node
-            currentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // currentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
         
         if (this.nodeSelectCallback) {

@@ -27,14 +27,10 @@
         </nav>
 
         <!-- Info Bar -->
-        <div class="bg-light border-bottom p-2">
-            <div class="row">
-                <div class="col-md-6">
-                    <small><strong>Pfad:</strong> <span id="currentPath">Kein Verzeichnis ausgewählt</span></small>
-                </div>
-                <div class="col-md-6 text-end">
-                    <small><strong>Größe:</strong> <span id="currentSize">-</span></small>
-                </div>
+        <div class="bg-light border-bottom" style="padding: 0.5rem 0.75rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; min-height: 1.5rem;">
+                <small style="display: flex; align-items: center; overflow: hidden; min-width: 0; flex: 1;"><strong style="flex-shrink: 0; margin-right: 0.5rem;">Pfad:</strong> <span id="currentPath" title="Kein Verzeichnis ausgewählt" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Kein Verzeichnis ausgewählt</span></small>
+                <small style="white-space: nowrap; flex-shrink: 0;"><strong>Größe:</strong> <span id="currentSize">-</span></small>
             </div>
         </div>
 
@@ -115,7 +111,7 @@
                     <div class="mb-3">
                         <label for="minPixelSize" class="form-label">Minimale Pixelgröße:</label>
                         <input type="number" class="form-control" id="minPixelSize" value="10" min="1">
-                        <small class="form-text text-muted">Kleinere Dateien werden nicht angezeigt</small>
+                        <small class="form-text text-muted">Elemente mit einer Breite oder Höhe unter dieser Pixelanzahl werden nicht weiter unterteilt</small>
                     </div>
                     <div class="mb-3">
                         <div class="d-flex justify-content-between align-items-center mb-2">
