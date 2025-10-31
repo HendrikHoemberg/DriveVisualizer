@@ -2,7 +2,7 @@ class TreemapVisualizer {
     // =============================================================================
     // INITIALIZATION & SETUP
     // =============================================================================
-    
+
     constructor(canvas, options = {}) {
         this.canvas = canvas;
         this.context = canvas.getContext('2d');
@@ -13,16 +13,16 @@ class TreemapVisualizer {
         this.colorMap = options.colorMap || new Map();
         this.minPixelSize = options.minPixelSize || 10;
         this.tooltip = options.tooltip || null;
-        
+
         // Default colors
         this.defaultDirColor = '#4a90e2';
         this.defaultFileColor = '#95a5a6';
         this.highlightColor = '#ff0000';
-        
+
         this.setupCanvas();
         this.setupEventListeners();
     }
-    
+
     // Sets up canvas resizing and initial size
     setupCanvas() {
         const resizeCanvas = () => {
@@ -33,20 +33,20 @@ class TreemapVisualizer {
                 this.render();
             }
         };
-        
+
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
     }
-    
+
     // Sets up mouse and keyboard event listeners
     setupEventListeners() {
         this.canvas.addEventListener('mousemove', (event) => this.handleMouseMove(event));
         this.canvas.addEventListener('click', (event) => this.handleClick(event));
         this.canvas.addEventListener('mouseleave', () => this.hideTooltip());
-        
+
         document.addEventListener('keydown', (event) => this.handleKeyPress(event));
     }
-    
+
     // Sets the data for the treemap
     setData(data) {
         this.data = data;
@@ -54,26 +54,26 @@ class TreemapVisualizer {
         this.selectedNode = data;
         this.render();
     }
-    
+
     // =============================================================================
     // RENDERING
     // =============================================================================
-    
+
     render() {
         if (!this.data) return;
-        
+
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.nodeRectMap.clear();
-        
+
         const rect = {
             x: 0,
             y: 0,
             width: this.canvas.width,
             height: this.canvas.height
         };
-        
+
         this.drawTreemap(this.currentRoot, rect, true);
-        
+
         // Highlight selected node
         if (this.selectedNode) {
             const selectedRect = this.nodeRectMap.get(this.selectedNode);
@@ -84,36 +84,36 @@ class TreemapVisualizer {
             }
         }
     }
-    
+
     // Recursively draws the treemap layout
     drawTreemap(node, rect, horizontal) {
         this.nodeRectMap.set(node, rect);
-        
+
         // Skip if rectangle is too small
         if (rect.width < this.minPixelSize || rect.height < this.minPixelSize) {
             this.drawRect(node, rect);
             return;
         }
-        
+
         // If node has only one child, skip to that child
         if (node.children && node.children.length === 1) {
             this.drawTreemap(node.children[0], rect, horizontal);
             return;
         }
-        
+
         // If node has no children or is a file, just draw it
         if (!node.children || node.children.length === 0) {
             this.drawRect(node, rect);
             return;
         }
-        
+
         const children = [...node.children].sort((a, b) => b.size - a.size);
         let currentPos = horizontal ? rect.x : rect.y;
-        
+
         children.forEach(child => {
             const ratio = child.size / node.size;
             let childRect;
-            
+
             if (horizontal) {
                 const width = rect.width * ratio;
                 childRect = {
@@ -133,12 +133,12 @@ class TreemapVisualizer {
                 };
                 currentPos += height;
             }
-            
+
             // Recursively draw child with alternating direction
             this.drawTreemap(child, childRect, !horizontal);
         });
     }
-    
+
     // Draws a single rectangle for a node
     drawRect(node, rect) {
         let color = this.defaultDirColor;
@@ -149,51 +149,51 @@ class TreemapVisualizer {
                 color = this.defaultFileColor;
             }
         }
-        
+
         this.context.fillStyle = color;
         this.context.fillRect(rect.x, rect.y, rect.width, rect.height);
-        
+
         this.context.strokeStyle = '#ffffff';
         this.context.lineWidth = 1;
         this.context.strokeRect(rect.x, rect.y, rect.width, rect.height);
-        
+
         // Draw text if space permits
         if (rect.width > 30 && rect.height > 20) {
             this.context.fillStyle = '#ffffff';
             this.context.font = '12px Arial';
             this.context.textAlign = 'center';
             this.context.textBaseline = 'middle';
-            
+
             const text = node.name;
             const maxWidth = rect.width - 10;
             const truncatedText = this.truncateText(text, maxWidth);
-            
+
             this.context.fillText(truncatedText, rect.x + rect.width / 2, rect.y + rect.height / 2);
         }
     }
-    
+
     // Truncates text to fit within max width
     truncateText(text, maxWidth) {
         const metrics = this.context.measureText(text);
         if (metrics.width <= maxWidth) return text;
-        
+
         let truncated = text;
         while (this.context.measureText(truncated + '...').width > maxWidth && truncated.length > 0) {
             truncated = truncated.substring(0, truncated.length - 1);
         }
         return truncated + '...';
     }
-    
+
     // =============================================================================
     // EVENT HANDLERS
     // =============================================================================
-    
+
     // Handles mouse movement for tooltips
     handleMouseMove(event) {
         const canvasBounds = this.canvas.getBoundingClientRect();
         const mouseX = event.clientX - canvasBounds.left;
         const mouseY = event.clientY - canvasBounds.top;
-        
+
         const node = this.findSmallestNodeAtPosition(mouseX, mouseY);
         if (node) {
             this.showTooltip(node, event.clientX, event.clientY);
@@ -203,16 +203,16 @@ class TreemapVisualizer {
             this.canvas.style.cursor = 'default';
         }
     }
-    
+
     // Handles mouse clicks for selection
     handleClick(event) {
         const canvasBounds = this.canvas.getBoundingClientRect();
         const mouseX = event.clientX - canvasBounds.left;
         const mouseY = event.clientY - canvasBounds.top;
-        
+
         const node = this.findSmallestNodeAtPosition(mouseX, mouseY);
         if (!node) return;
-        
+
         if (event.ctrlKey) {
             // Ctrl+Click: Select the parent folder of the clicked element
             const parent = this.findParent(this.currentRoot, node);
@@ -233,16 +233,16 @@ class TreemapVisualizer {
             this.onNodeSelect(node);
         }
     }
-    
+
     // Handles keyboard navigation
     handleKeyPress(event) {
         if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
             return;
         }
-        
+
         if (!this.selectedNode) return;
-        
-        switch(event.key) {
+
+        switch (event.key) {
             case 'ArrowUp':
                 this.navigateToSibling(-1);
                 break;
@@ -270,26 +270,26 @@ class TreemapVisualizer {
                 break;
         }
     }
-    
+
     // =============================================================================
     // NAVIGATION
     // =============================================================================
-    
+
     // Navigates to sibling node in given direction
     navigateToSibling(direction) {
         const parent = this.findParent(this.currentRoot, this.selectedNode);
         if (!parent || !parent.children) return;
-        
+
         const currentIndex = parent.children.indexOf(this.selectedNode);
         const newIndex = currentIndex + direction;
-        
+
         if (newIndex >= 0 && newIndex < parent.children.length) {
             this.selectedNode = parent.children[newIndex];
             this.render();
             this.onNodeSelect(this.selectedNode);
         }
     }
-    
+
     // Navigates to the parent node
     navigateToParent() {
         const parent = this.findParent(this.currentRoot, this.selectedNode);
@@ -299,7 +299,7 @@ class TreemapVisualizer {
             this.onNodeSelect(this.selectedNode, 'navigateToParent');
         }
     }
-    
+
     // Navigates to the first child node
     navigateToFirstChild() {
         if (this.selectedNode.children && this.selectedNode.children.length > 0) {
@@ -308,15 +308,15 @@ class TreemapVisualizer {
             this.onNodeSelect(this.selectedNode);
         }
     }
-    
+
     // =============================================================================
     // NODE SEARCH & TRAVERSAL
     // =============================================================================
-    
+
     // Finds the parent of a given node
     findParent(root, node) {
         if (!root.children) return null;
-        
+
         for (let child of root.children) {
             if (child === node) return root;
             const found = this.findParent(child, node);
@@ -324,7 +324,7 @@ class TreemapVisualizer {
         }
         return null;
     }
-    
+
     // Finds node at given position (first match)
     findNodeAtPosition(positionX, positionY) {
         for (let [node, rect] of this.nodeRectMap) {
@@ -335,12 +335,12 @@ class TreemapVisualizer {
         }
         return null;
     }
-     
+
     // Finds the smallest node at given position
     findSmallestNodeAtPosition(positionX, positionY) {
         let smallestNode = null;
         let smallestArea = Infinity;
-        
+
         for (let [node, rect] of this.nodeRectMap) {
             if (positionX >= rect.x && positionX <= rect.x + rect.width &&
                 positionY >= rect.y && positionY <= rect.y + rect.height) {
@@ -353,11 +353,11 @@ class TreemapVisualizer {
         }
         return smallestNode;
     }
-    
+
     // =============================================================================
     // ZOOM & VIEW CONTROL
     // =============================================================================
-    
+
     // Zooms in to show only the given node
     zoomIn(node) {
         if (node.directory && node.children && node.children.length > 0) {
@@ -367,7 +367,7 @@ class TreemapVisualizer {
             this.onNodeSelect(node, 'zoomIn');
         }
     }
-    
+
     // Zooms out to show parent level
     zoomOut() {
         if (this.currentRoot !== this.data) {
@@ -380,7 +380,7 @@ class TreemapVisualizer {
             }
         }
     }
-    
+
     // Resets view to show entire tree
     resetView() {
         this.currentRoot = this.data;
@@ -388,30 +388,30 @@ class TreemapVisualizer {
         this.render();
         this.onNodeSelect(this.data, 'resetView');
     }
-    
+
     // =============================================================================
     // TOOLTIP
     // =============================================================================
-    
+
     // Shows tooltip for the given node
     showTooltip(node, mouseX, mouseY) {
         if (!this.tooltip) return;
-        
+
         const size = formatSize(node.size);
         const type = node.directory ? 'Directory' : 'File';
         const extension = node.extension ? ` (.${node.extension})` : '';
-        
+
         this.tooltip.innerHTML = `
             <strong>${node.name}${extension}</strong><br>
             Type: ${type}<br>
             Size: ${size}<br>
             Path: ${node.path}
         `;
-        
+
         this.tooltip.style.display = 'block';
         this.tooltip.style.left = mouseX + 10 + 'px';
         this.tooltip.style.top = mouseY + 10 + 'px';
-        
+
         // Adjust position if tooltip goes off screen
         const tooltipBounds = this.tooltip.getBoundingClientRect();
         if (tooltipBounds.right > window.innerWidth) {
@@ -421,53 +421,53 @@ class TreemapVisualizer {
             this.tooltip.style.top = (mouseY - tooltipBounds.height - 10) + 'px';
         }
     }
-    
+
     // Hides the tooltip
     hideTooltip() {
         if (this.tooltip) {
             this.tooltip.style.display = 'none';
         }
     }
-    
+
     // =============================================================================
     // CALLBACKS & CONFIGURATION
     // =============================================================================
-    
+
     // Calls the node select callback
     onNodeSelect(node, navigationType = null) {
         if (this.nodeSelectCallback) {
             this.nodeSelectCallback(node, navigationType);
         }
     }
-    
+
     // Sets the callback for node selection
     setNodeSelectCallback(callback) {
         this.nodeSelectCallback = callback;
     }
-    
+
     // Updates the color map and re-renders
     updateColorMap(colorMap) {
         this.colorMap = colorMap;
         this.render();
     }
-    
+
     // Updates minimum pixel size and re-renders
     updateMinPixelSize(size) {
         this.minPixelSize = size;
         this.render();
     }
-    
+
     // Focus on a specific node (called from file tree)
     focusOnNode(node) {
         const nodeInCurrentView = this.findNodeInTree(this.currentRoot, node);
-        
+
         if (nodeInCurrentView) {
             this.selectedNode = nodeInCurrentView;
             this.render();
             this.onNodeSelect(nodeInCurrentView);
         } else {
             this.currentRoot = this.data;
-            
+
             const nodeInFullTree = this.findNodeInTree(this.data, node);
             if (nodeInFullTree) {
                 this.selectedNode = nodeInFullTree;
@@ -476,26 +476,26 @@ class TreemapVisualizer {
             }
         }
     }
-    
+
     // Find a node in the tree by comparing paths or references
     findNodeInTree(root, targetNode) {
         if (!root) return null;
-        
+
         if (root.path === targetNode.path) {
             return root;
         }
-        
+
         if (root === targetNode) {
             return root;
         }
-        
+
         if (root.children) {
             for (let child of root.children) {
                 const found = this.findNodeInTree(child, targetNode);
                 if (found) return found;
             }
         }
-        
+
         return null;
     }
 }

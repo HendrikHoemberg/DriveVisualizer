@@ -1,43 +1,58 @@
-[ {
-  "extension" : "js",
-  "color" : "#f7df1e"
-}, {
-  "extension" : "java",
-  "color" : "#f66151"
-}, {
-  "extension" : "html",
-  "color" : "#ff7800"
-}, {
-  "extension" : "css",
-  "color" : "#99c1f1"
-}, {
-  "extension" : "json",
-  "color" : "#292929"
-}, {
-  "extension" : "txt",
-  "color" : "#cdab8f"
-}, {
-  "extension" : "pdf",
-  "color" : "#63452c"
-}, {
-  "extension" : "zip",
-  "color" : "#dc8add"
-}, {
-  "extension" : "rar",
-  "color" : "#9141ac"
-}, {
-  "extension" : "xls",
-  "color" : "#33d17a"
-}, {
-  "extension" : "xlsx",
-  "color" : "#33d17a"
-}, {
-  "extension" : "doc",
-  "color" : "#1a5fb4"
-}, {
-  "extension" : "docx",
-  "color" : "#1a5fb4"
-}, {
-  "extension" : "csv",
-  "color" : "#e7ff00"
-} ]
+[
+  {
+    "extension": "js",
+    "color": "#f7df1e"
+  },
+  {
+    "extension": "java",
+    "color": "#f66151"
+  },
+  {
+    "extension": "html",
+    "color": "#ff7800"
+  },
+  {
+    "extension": "css",
+    "color": "#99c1f1"
+  },
+  {
+    "extension": "json",
+    "color": "#292929"
+  },
+  {
+    "extension": "txt",
+    "color": "#cdab8f"
+  },
+  {
+    "extension": "pdf",
+    "color": "#63452c"
+  },
+  {
+    "extension": "zip",
+    "color": "#dc8add"
+  },
+  {
+    "extension": "rar",
+    "color": "#9141ac"
+  },
+  {
+    "extension": "xls",
+    "color": "#33d17a"
+  },
+  {
+    "extension": "xlsx",
+    "color": "#33d17a"
+  },
+  {
+    "extension": "doc",
+    "color": "#1a5fb4"
+  },
+  {
+    "extension": "docx",
+    "color": "#1a5fb4"
+  },
+  {
+    "extension": "csv",
+    "color": "#e7ff00"
+  }
+]
