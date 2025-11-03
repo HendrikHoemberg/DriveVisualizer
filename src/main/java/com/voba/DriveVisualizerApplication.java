@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class DriveVisualizerApplication {
 
   /**
-   * Hauptmethode zum starten der Anwendung.
+   * Hauptmethode zum Starten der Anwendung.
    *
    * @param args Kommandozeilenargumente
    */
