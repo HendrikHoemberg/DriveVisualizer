@@ -1,6 +1,8 @@
 package com.voba.model;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -8,36 +10,33 @@ import java.util.List;
  * Verzeichnis mit allen relevanten Informationen.
  */
 public class FileNode {
-  private String name;
-  private String path;
+  private final Path path;
+  private final List<FileNode> children;
+  private final String extension;
   private long size;
-  private boolean isDirectory;
-  private List<FileNode> children;
-  private String extension;
-
-  /** Standardkonstruktor. */
-  public FileNode() {
-    this.children = new ArrayList<>();
-    this.size = 0;
-  }
 
   /**
    * Konstruktor mit Parametern.
    *
-   * @param name Name der Datei oder des Verzeichnisses
    * @param path Pfad zur Datei oder zum Verzeichnis
    * @param isDirectory true, wenn es sich um ein Verzeichnis handelt
    */
-  public FileNode(String name, String path, boolean isDirectory) {
-    this.name = name;
+  public FileNode(Path path, boolean isDirectory) {
     this.path = path;
-    this.isDirectory = isDirectory;
-    this.children = new ArrayList<>();
+    this.children = isDirectory ? new ArrayList<>() : null;
     this.size = 0;
 
-    if (!isDirectory && name.contains(".")) {
-      int lastDot = name.lastIndexOf(".");
-      this.extension = name.substring(lastDot + 1).toLowerCase();
+    // Extrahiere Extension aus dem Dateinamen
+    if (!isDirectory && path.getFileName() != null) {
+      String fileName = path.getFileName().toString();
+      if (fileName.contains(".")) {
+        int lastDot = fileName.lastIndexOf(".");
+        this.extension = fileName.substring(lastDot + 1).toLowerCase();
+      } else {
+        this.extension = null;
+      }
+    } else {
+      this.extension = null;
     }
   }
 
@@ -57,27 +56,35 @@ public class FileNode {
 
   /** Sortiert die Kind-Elemente nach Größe und Name (rekursiv). */
   public void sortChildren() {
+    if (children == null) {
+      return;
+    }
+
     children.sort(
         (firstChild, secondChild) -> {
           int sizeCompare = Long.compare(secondChild.size, firstChild.size);
           if (sizeCompare != 0) {
             return sizeCompare;
           }
-          return firstChild.name.compareToIgnoreCase(secondChild.name);
+          return firstChild.getName().compareToIgnoreCase(secondChild.getName());
         });
 
     for (FileNode child : children) {
-      if (child.isDirectory) {
+      if (child.isDirectory()) {
         child.sortChildren();
       }
     }
   }
 
   public String getName() {
-    return name;
+    return path.getFileName() != null ? path.getFileName().toString() : path.toString();
   }
 
   public String getPath() {
+    return path.toString();
+  }
+
+  public Path getPathObject() {
     return path;
   }
 
@@ -86,38 +93,18 @@ public class FileNode {
   }
 
   public boolean isDirectory() {
-    return isDirectory;
+    return children != null;
   }
 
   public List<FileNode> getChildren() {
-    return children;
+    return children != null ? children : Collections.emptyList();
   }
 
   public String getExtension() {
     return extension;
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public void setPath(String path) {
-    this.path = path;
-  }
-
   public void setSize(long size) {
     this.size = size;
-  }
-
-  public void setDirectory(boolean directory) {
-    isDirectory = directory;
-  }
-
-  public void setChildren(List<FileNode> children) {
-    this.children = children;
-  }
-
-  public void setExtension(String extension) {
-    this.extension = extension;
   }
 }

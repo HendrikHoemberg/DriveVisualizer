@@ -2,25 +2,22 @@ package com.voba.model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.junit.jupiter.api.Test;
 
 /** Unit-Tests für die FileNode-Klasse. */
 class FileNodeTest {
 
   @Test
-  void testDefaultConstructor() {
-    FileNode node = new FileNode();
+  void testConstructor() {
+    Path path = Paths.get("/path/to/test.txt");
+    FileNode node = new FileNode(path, false);
 
     assertNotNull(node);
     assertNotNull(node.getChildren());
     assertEquals(0, node.getSize());
     assertTrue(node.getChildren().isEmpty());
-  }
-
-  @Test
-  void testParameterizedConstructor() {
-    FileNode node = new FileNode("test.txt", "/path/to/test.txt", false);
-
     assertEquals("test.txt", node.getName());
     assertEquals("/path/to/test.txt", node.getPath());
     assertFalse(node.isDirectory());
@@ -29,7 +26,8 @@ class FileNodeTest {
 
   @Test
   void testDirectoryNode() {
-    FileNode node = new FileNode("folder", "/path/to/folder", true);
+    Path path = Paths.get("/path/to/folder");
+    FileNode node = new FileNode(path, true);
 
     assertEquals("folder", node.getName());
     assertTrue(node.isDirectory());
@@ -38,20 +36,20 @@ class FileNodeTest {
 
   @Test
   void testExtensionExtraction() {
-    FileNode node1 = new FileNode("file.java", "/path/file.java", false);
+    FileNode node1 = new FileNode(Paths.get("/path/file.java"), false);
     assertEquals("java", node1.getExtension());
 
-    FileNode node2 = new FileNode("archive.tar.gz", "/path/archive.tar.gz", false);
+    FileNode node2 = new FileNode(Paths.get("/path/archive.tar.gz"), false);
     assertEquals("gz", node2.getExtension());
 
-    FileNode node3 = new FileNode("noextension", "/path/noextension", false);
+    FileNode node3 = new FileNode(Paths.get("/path/noextension"), false);
     assertNull(node3.getExtension());
   }
 
   @Test
   void testAddChild() {
-    FileNode parent = new FileNode("parent", "/parent", true);
-    FileNode child = new FileNode("child.txt", "/parent/child.txt", false);
+    FileNode parent = new FileNode(Paths.get("/parent"), true);
+    FileNode child = new FileNode(Paths.get("/parent/child.txt"), false);
     child.setSize(100);
 
     parent.addChild(child);
@@ -63,12 +61,12 @@ class FileNodeTest {
 
   @Test
   void testAddMultipleChildren() {
-    FileNode parent = new FileNode("parent", "/parent", true);
+    FileNode parent = new FileNode(Paths.get("/parent"), true);
 
-    FileNode child1 = new FileNode("file1.txt", "/parent/file1.txt", false);
+    FileNode child1 = new FileNode(Paths.get("/parent/file1.txt"), false);
     child1.setSize(100);
 
-    FileNode child2 = new FileNode("file2.txt", "/parent/file2.txt", false);
+    FileNode child2 = new FileNode(Paths.get("/parent/file2.txt"), false);
     child2.setSize(200);
 
     parent.addChild(child1);
@@ -80,15 +78,15 @@ class FileNodeTest {
 
   @Test
   void testSortChildren() {
-    FileNode parent = new FileNode("parent", "/parent", true);
+    FileNode parent = new FileNode(Paths.get("/parent"), true);
 
-    FileNode small = new FileNode("small.txt", "/parent/small.txt", false);
+    FileNode small = new FileNode(Paths.get("/parent/small.txt"), false);
     small.setSize(100);
 
-    FileNode large = new FileNode("large.txt", "/parent/large.txt", false);
+    FileNode large = new FileNode(Paths.get("/parent/large.txt"), false);
     large.setSize(1000);
 
-    FileNode medium = new FileNode("medium.txt", "/parent/medium.txt", false);
+    FileNode medium = new FileNode(Paths.get("/parent/medium.txt"), false);
     medium.setSize(500);
 
     parent.addChild(small);
@@ -104,12 +102,12 @@ class FileNodeTest {
 
   @Test
   void testSortChildrenByNameWhenSameSizes() {
-    FileNode parent = new FileNode("parent", "/parent", true);
+    FileNode parent = new FileNode(Paths.get("/parent"), true);
 
-    FileNode fileB = new FileNode("b.txt", "/parent/b.txt", false);
+    FileNode fileB = new FileNode(Paths.get("/parent/b.txt"), false);
     fileB.setSize(100);
 
-    FileNode fileA = new FileNode("a.txt", "/parent/a.txt", false);
+    FileNode fileA = new FileNode(Paths.get("/parent/a.txt"), false);
     fileA.setSize(100);
 
     parent.addChild(fileB);
@@ -119,5 +117,13 @@ class FileNodeTest {
 
     assertEquals("a.txt", parent.getChildren().get(0).getName());
     assertEquals("b.txt", parent.getChildren().get(1).getName());
+  }
+
+  @Test
+  void testGetPathObject() {
+    Path expectedPath = Paths.get("/path/to/test.txt");
+    FileNode node = new FileNode(expectedPath, false);
+
+    assertEquals(expectedPath, node.getPathObject());
   }
 }

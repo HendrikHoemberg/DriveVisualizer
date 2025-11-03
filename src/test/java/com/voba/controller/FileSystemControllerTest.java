@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.voba.model.FileNode;
 import com.voba.service.DirectoryService;
+import java.nio.file.Paths;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -23,7 +24,7 @@ class FileSystemControllerTest {
 
   @Test
   void testScanDirectory() throws Exception {
-    FileNode mockNode = new FileNode("test", "/test", true);
+    FileNode mockNode = new FileNode(Paths.get("/test"), true);
     mockNode.setSize(1000);
 
     when(directoryService.scanDirectory(anyString())).thenReturn(mockNode);
@@ -62,7 +63,7 @@ class FileSystemControllerTest {
 
   @Test
   void testScanDirectoryWithFile() throws Exception {
-    FileNode fileNode = new FileNode("file.txt", "/path/file.txt", false);
+    FileNode fileNode = new FileNode(Paths.get("/path/file.txt"), false);
     fileNode.setSize(500);
 
     when(directoryService.scanDirectory(anyString())).thenReturn(fileNode);
