@@ -38,8 +38,11 @@
                         title="Kein Verzeichnis ausgewählt"
                         style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Kein Verzeichnis
                         ausgewählt</span></small>
-                <small style="white-space: nowrap; flex-shrink: 0;"><strong>Größe:</strong> <span
-                        id="currentSize">-</span></small>
+                <div style="display: flex; gap: 1rem; align-items: center; flex-shrink: 0;">
+                    <small id="scanOptionsIndicator" style="white-space: nowrap;" title="Aktive Scan-Optionen"></small>
+                    <small style="white-space: nowrap;"><strong>Größe:</strong> <span
+                            id="currentSize">-</span></small>
+                </div>
             </div>
         </div>
 
@@ -121,15 +124,62 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
+                    <!-- Scan Options -->
+                    <h6 class="mb-3 text-primary">Scan-Optionen</h6>
+                    
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="includeHiddenFiles">
+                            <label class="form-check-label" for="includeHiddenFiles">
+                                Versteckte Dateien inkludieren
+                            </label>
+                        </div>
+                        <small class="form-text text-muted ms-4">
+                            Nützlich beim Suchen nach versteckten Speicherfressern
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="useParallelProcessing">
+                            <label class="form-check-label" for="useParallelProcessing">
+                                Parallele Verarbeitung nutzen
+                            </label>
+                        </div>
+                        <small class="form-text text-muted ms-4">
+                            ⚠️ Schneller bei großen Verzeichnissen, aber erhöht Komplexität und Systemlast
+                        </small>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="maxThreads" class="form-label">Maximale Anzahl Threads:</label>
+                        <input type="number" class="form-control" id="maxThreads" value="4" min="1" max="16">
+                        <small class="form-text text-muted">
+                            Wird nur bei aktivierter paralleler Verarbeitung verwendet. 
+                            <strong>Hinweis:</strong> Mehr Threads als CPU-Kerne können zu Performance-Einbußen führen.
+                        </small>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Visualization Options -->
+                    <h6 class="mb-3 text-primary">Visualisierungs-Optionen</h6>
+
                     <div class="mb-3">
                         <label for="minPixelSize" class="form-label">Minimale Pixelgröße:</label>
                         <input type="number" class="form-control" id="minPixelSize" value="10" min="1">
                         <small class="form-text text-muted">Elemente mit einer Breite oder Höhe unter dieser Pixelanzahl
                             werden nicht weiter unterteilt</small>
                     </div>
+
+                    <hr class="my-4">
+
+                    <!-- Color Mappings -->
+                    <h6 class="mb-3 text-primary">Farbzuordnungen</h6>
+
                     <div class="mb-3">
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <label class="form-label mb-0">Farbzuordnungen:</label>
+                            <label class="form-label mb-0">Dateierweiterungen:</label>
                             <div>
                                 <button type="button" class="btn btn-sm btn-success" id="addMappingBtn">+
                                     Hinzufügen</button>

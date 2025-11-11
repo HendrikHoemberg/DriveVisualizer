@@ -1,18 +1,25 @@
 package com.voba.controller;
 
-import com.voba.model.FileNode;
-import com.voba.service.DirectoryService;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.voba.model.FileNode;
+import com.voba.service.DirectoryService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
- * REST-Controller für Dateisystem-Operationen. Bietet Endpunkte zum Scannen von Verzeichnissen und
+ * REST-Controller für Dateisystem-Operationen. Bietet Endpunkte zum Scannen von
+ * Verzeichnissen und
  * Abrufen verfügbarer Laufwerke.
  */
 @RestController
@@ -20,18 +27,36 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 public class FileSystemController {
 
-  @Autowired private DirectoryService directoryService;
+  @Autowired
+  private DirectoryService directoryService;
 
   /**
    * Scannt ein Verzeichnis und gibt die Dateistruktur zurück.
    *
-   * @param path Pfad zum zu scannenden Verzeichnis
+   * @param path          Pfad zum zu scannenden Verzeichnis
+   * @param includeHidden Optional: versteckte Dateien inkludieren (default:
+   *                      false)
+   * @param parallel      Optional: parallele Verarbeitung nutzen (default: false)
+   * @param maxThreads    Optional: max. Anzahl Threads bei paralleler
+   *                      Verarbeitung (default: CPU-Kerne)
    * @return ResponseEntity mit der Dateistruktur oder Fehlermeldung
    */
   @GetMapping("/scan")
-  public ResponseEntity<?> scanDirectory(@RequestParam String path) {
+  public ResponseEntity<?> scanDirectory(
+      @RequestParam String path,
+      @RequestParam(required = false, defaultValue = "false") boolean includeHidden,
+      @RequestParam(required = false, defaultValue = "false") boolean parallel,
+      @RequestParam(required = false) Integer maxThreads) {
     try {
-      FileNode result = directoryService.scanDirectory(path);
+      com.voba.model.ScanOptions options = new com.voba.model.ScanOptions()
+          .setIncludeHiddenFiles(includeHidden)
+          .setUseParallelProcessing(parallel);
+
+      if (maxThreads != null && maxThreads > 0) {
+        options.setMaxThreads(maxThreads);
+      }
+
+      FileNode result = directoryService.scanDirectory(path, options);
       return ResponseEntity.ok(result);
     } catch (Exception exception) {
       Map<String, String> error = new HashMap<>();

@@ -11,6 +11,13 @@ let colorMappings = []; // Array of {extension, color} objects
 let minPixelSize = 10;
 let syncingSelection = false; // Prevent infinite loops when syncing
 
+// Scan options
+let scanOptions = {
+    includeHiddenFiles: false,
+    useParallelProcessing: false,
+    maxThreads: 4
+};
+
 // =============================================================================
 // INITIALIZATION & SETUP
 // =============================================================================
@@ -159,7 +166,16 @@ async function scanDirectory(path) {
     showLoading(true);
 
     try {
-        const response = await fetch(`/api/scan?path=${encodeURIComponent(path)}`);
+        // Build URL with scan options
+        const url = new URL('/api/scan', window.location.origin);
+        url.searchParams.append('path', path);
+        url.searchParams.append('includeHidden', scanOptions.includeHiddenFiles);
+        url.searchParams.append('parallel', scanOptions.useParallelProcessing);
+        if (scanOptions.useParallelProcessing) {
+            url.searchParams.append('maxThreads', scanOptions.maxThreads);
+        }
+
+        const response = await fetch(url);
 
         if (!response.ok) {
             const error = await response.json();
@@ -197,15 +213,35 @@ async function scanDirectory(path) {
 
 // Load settings
 async function loadSettings() {
-    // Load min pixel size from localStorage
+    // Load settings from localStorage
     const savedSettings = localStorage.getItem('driveVisualizerSettings');
     if (savedSettings) {
         const settings = JSON.parse(savedSettings);
+        
+        // Load min pixel size
         if (settings.minPixelSize) {
             minPixelSize = settings.minPixelSize;
             document.getElementById('minPixelSize').value = minPixelSize;
         }
+        
+        // Load scan options
+        if (settings.scanOptions) {
+            scanOptions = { ...scanOptions, ...settings.scanOptions };
+            document.getElementById('includeHiddenFiles').checked = scanOptions.includeHiddenFiles;
+            document.getElementById('useParallelProcessing').checked = scanOptions.useParallelProcessing;
+            document.getElementById('maxThreads').value = scanOptions.maxThreads;
+        }
     }
+
+    // Set default max threads to CPU cores if not set
+    const cpuCores = navigator.hardwareConcurrency || 4;
+    if (!savedSettings || !savedSettings.scanOptions || !savedSettings.scanOptions.maxThreads) {
+        scanOptions.maxThreads = Math.min(cpuCores, 8);
+        document.getElementById('maxThreads').value = scanOptions.maxThreads;
+    }
+
+    // Update scan options indicator
+    updateScanOptionsIndicator();
 
     // Load color mappings from backend
     await loadColorMappingsFromBackend();
@@ -216,8 +252,18 @@ async function saveSettings() {
     // Get min pixel size
     minPixelSize = parseInt(document.getElementById('minPixelSize').value) || 10;
 
-    // Save min pixel size to localStorage
-    const settings = { minPixelSize: minPixelSize };
+    // Get scan options
+    scanOptions = {
+        includeHiddenFiles: document.getElementById('includeHiddenFiles').checked,
+        useParallelProcessing: document.getElementById('useParallelProcessing').checked,
+        maxThreads: parseInt(document.getElementById('maxThreads').value) || 4
+    };
+
+    // Save settings to localStorage
+    const settings = { 
+        minPixelSize: minPixelSize,
+        scanOptions: scanOptions
+    };
     localStorage.setItem('driveVisualizerSettings', JSON.stringify(settings));
 
     // Get color mappings from UI
@@ -255,6 +301,9 @@ async function saveSettings() {
             treemapVisualizer.updateMinPixelSize(minPixelSize);
             treemapVisualizer.updateColorMap(colorMap);
         }
+
+        // Update scan options indicator
+        updateScanOptionsIndicator();
 
         bootstrap.Modal.getInstance(document.getElementById('settingsModal')).hide();
 
@@ -395,6 +444,26 @@ function updatePathDisplay(path) {
 // Update size display
 function updateSizeDisplay(size) {
     document.getElementById('currentSize').textContent = formatSize(size);
+}
+
+// Update scan options indicator
+function updateScanOptionsIndicator() {
+    const indicator = document.getElementById('scanOptionsIndicator');
+    const badges = [];
+    
+    if (scanOptions.includeHiddenFiles) {
+        badges.push('<span class="badge bg-info" title="Versteckte Dateien werden gescannt">👁️ Versteckte</span>');
+    }
+    
+    if (scanOptions.useParallelProcessing) {
+        badges.push(`<span class="badge bg-warning text-dark" title="Parallele Verarbeitung mit max. ${scanOptions.maxThreads} Threads">⚡ Parallel (${scanOptions.maxThreads})</span>`);
+    }
+    
+    if (badges.length === 0) {
+        badges.push('<span class="badge bg-secondary" title="Standard-Scan: sequentiell, ohne versteckte Dateien">📁 Standard</span>');
+    }
+    
+    indicator.innerHTML = badges.join(' ');
 }
 
 // Show/hide loading overlay
