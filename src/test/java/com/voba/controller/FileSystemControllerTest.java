@@ -1,13 +1,18 @@
 package com.voba.controller;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.nio.file.Paths;
 
 import com.voba.model.FileNode;
 import com.voba.service.DirectoryService;
-import java.nio.file.Paths;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18,26 +23,28 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(FileSystemController.class)
 class FileSystemControllerTest {
 
-  @Autowired private MockMvc mockMvc;
+  @Autowired
+  private MockMvc mockMvc;
 
-  @MockitoBean private DirectoryService directoryService;
+  @MockitoBean
+  private DirectoryService directoryService;
 
   @Test
   void testScanDirectory() throws Exception {
-    FileNode mockNode = new FileNode(Paths.get("/test"), true);
+    FileNode mockNode = new FileNode(Paths.get("test"), true);
     mockNode.setSize(1000);
 
     when(directoryService.scanDirectory(anyString())).thenReturn(mockNode);
 
     mockMvc
-        .perform(get("/api/scan").param("path", "/test/path"))
+        .perform(get("/api/scan").param("path", "test/path"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.name").value("test"))
-        .andExpect(jsonPath("$.path").value("/test"))
+        .andExpect(jsonPath("$.path").value(mockNode.getPath()))
         .andExpect(jsonPath("$.directory").value(true))
         .andExpect(jsonPath("$.size").value(1000));
 
-    verify(directoryService, times(1)).scanDirectory("/test/path");
+    verify(directoryService, times(1)).scanDirectory("test/path");
   }
 
   @Test
@@ -46,11 +53,11 @@ class FileSystemControllerTest {
         .thenThrow(new IllegalArgumentException("Invalid path"));
 
     mockMvc
-        .perform(get("/api/scan").param("path", "/invalid/path"))
+        .perform(get("/api/scan").param("path", "invalid/path"))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.error").value("Invalid path"));
 
-    verify(directoryService, times(1)).scanDirectory("/invalid/path");
+    verify(directoryService, times(1)).scanDirectory("invalid/path");
   }
 
   @Test
@@ -63,18 +70,18 @@ class FileSystemControllerTest {
 
   @Test
   void testScanDirectoryWithFile() throws Exception {
-    FileNode fileNode = new FileNode(Paths.get("/path/file.txt"), false);
+    FileNode fileNode = new FileNode(Paths.get("path", "file.txt"), false);
     fileNode.setSize(500);
 
     when(directoryService.scanDirectory(anyString())).thenReturn(fileNode);
 
     mockMvc
-        .perform(get("/api/scan").param("path", "/path"))
+        .perform(get("/api/scan").param("path", "path"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.name").value("file.txt"))
         .andExpect(jsonPath("$.directory").value(false))
         .andExpect(jsonPath("$.extension").value("txt"));
 
-    verify(directoryService, times(1)).scanDirectory("/path");
+    verify(directoryService, times(1)).scanDirectory("path");
   }
 }

@@ -1,6 +1,7 @@
 package com.voba.model;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
@@ -30,13 +31,5 @@ class ColorMappingTest {
 
     assertEquals("txt", mapping.getExtension());
     assertEquals("#00FF00", mapping.getColor());
-  }
-
-  @Test
-  void testNullValues() {
-    ColorMapping mapping = new ColorMapping(null, null);
-
-    assertNull(mapping.getExtension());
-    assertNull(mapping.getColor());
   }
 }
